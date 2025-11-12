@@ -1,30 +1,19 @@
 import {React, useState} from "react";
-import { View, StyleSheet, TextInput, Text, Button} from "react-native";
+import { View, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, Platform} from "react-native";
 import { TokenContext, UsernameContext } from '../Context/Context'
-import { signIn } from "../components/SignIn";
+import { signIn } from "../components/SignIn"
+import { styles } from '../styles/SignInScreen.styles'
+import { colors } from '../styles/theme';
 
 export default function SignInScreen ({ navigation }) {
   const [login, setLogin] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
 
-  
-
-  const styles = StyleSheet.create({
-    input: {
-      height: 40,
-      margin: 12,
-      borderWidth: 1,
-      padding: 10,
-    },
-});
-
   return (
     <TokenContext.Consumer>
       {([token, setToken]) => (
-        
         <UsernameContext.Consumer>
-          
           {([username, setUsername]) => {
 
             const onSubmit = () => {
@@ -32,7 +21,7 @@ export default function SignInScreen ({ navigation }) {
                     .then(token => {
                       setToken(token)
                       setUsername(login)
-                      props.navigate('Home')
+                      navigation.navigate('Home')
                     })
                     .catch(err => {
                       setError(err.message)
@@ -40,26 +29,46 @@ export default function SignInScreen ({ navigation }) {
             }
 
             return (
-              <View>
-                <TextInput
-                  style={styles.input}
-                  onChangeText={setLogin}
-                  value={login}
-                />
-                <TextInput
-                  style={styles.input}
-                  onChangeText={setPassword}
-                  value={password}
-                  secureTextEntry={true}
-                  placeholder="Your password"
-                />
-                <Button
-                  onPress={onSubmit}
-                  title="Se connecter"
-                  color="#841584"
-                />
-                <Text>{error}</Text>
-              </View>
+              <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={styles.container}
+              >
+                <View style={styles.content}>
+                  <Text style={styles.title}>Connexion</Text>
+                  <Text style={styles.subtitle}>Bienvenue</Text>
+
+                  <View style={styles.form}>
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={setLogin}
+                      value={login}
+                      placeholder="Nom d'utilisateur"
+                      placeholderTextColor={colors.placeholder}
+                      autoCapitalize="none"
+                    />
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={setPassword}
+                      value={password}
+                      secureTextEntry={true}
+                      placeholder="Mot de passe"
+                      placeholderTextColor={colors.placeholder}
+                    />
+
+                    {error ? (
+                      <Text style={styles.error}>{error}</Text>
+                    ) : null}
+
+                    <TouchableOpacity
+                      style={styles.button}
+                      onPress={onSubmit}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={styles.buttonText}>Se connecter</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </KeyboardAvoidingView>
             )
 
           }}

@@ -1,7 +1,9 @@
 import {React, useState} from "react";
-import { View, StyleSheet, TextInput, Text, Button} from "react-native";
+import { View, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, Platform} from "react-native";
 import { TokenContext, UsernameContext } from '../Context/Context'
-import { signUp } from "../components/SignUp";
+import { signUp } from "../components/SignUp"
+import { styles } from '../styles/SignUpScreen.styles'
+import { colors } from '../styles/theme';
 
 export default function SignUpScreen ({ navigation }) {
   const [login, setLogin] = useState("")
@@ -9,69 +11,76 @@ export default function SignUpScreen ({ navigation }) {
   const [confPassword, setConfPassword] = useState("")
   const [error, setError] = useState("")
 
-  
-
-  const styles = StyleSheet.create({
-    input: {
-      height: 40,
-      margin: 12,
-      borderWidth: 1,
-      padding: 10,
-    },
-});
-
   return (
     <TokenContext.Consumer>
       {([token, setToken]) => (
         <UsernameContext.Consumer>
-          
           {([username, setUsername]) => {
             const onSubmit = () => {
                 if (password === confPassword){
-
                     signUp(login, password)
                         .then(token => {
                             setToken(token)
                             setUsername(login)
-                            props.navigate('SignIn')
+                            navigation.navigate('Home')
                         })
                         .catch(err => {
                             setError(err.message)
                         })
                 }else{
-                    setError("Les deux mot de passe sont différents");
+                    setError("Les deux mots de passe sont différents");
                 }
             }
             return (
-              <View>
-                <TextInput
-                  style={styles.input}
-                  onChangeText={setLogin}
-                  value={login}
-                />
-                <TextInput
-                  style={styles.input}
-                  onChangeText={setPassword}
-                  value={password}
-                  secureTextEntry={true}
-                  placeholder="Mot de passe"
-                />
-                <TextInput
-                  style={styles.input}
-                  onChangeText={setConfPassword}
-                  value={confPassword}
-                  secureTextEntry={true}
-                  placeholder="Confirmer le Mot de passe"
-                />
-                <Button
-                  onPress={onSubmit}
-                  title="S'inscrire"
-                  color="#841584"
-                />
-                <Text>{error}</Text>
-              </View>
-            )
+              <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={styles.container}
+              >
+                <View style={styles.content}>
+                  <Text style={styles.title}>Inscription</Text>
+                  <Text style={styles.subtitle}>Créer un compte</Text>
 
+                  <View style={styles.form}>
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={setLogin}
+                      value={login}
+                      placeholder="Nom d'utilisateur"
+                      placeholderTextColor={colors.placeholder}
+                      autoCapitalize="none"
+                    />
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={setPassword}
+                      value={password}
+                      secureTextEntry={true}
+                      placeholder="Mot de passe"
+                      placeholderTextColor={colors.placeholder}
+                    />
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={setConfPassword}
+                      value={confPassword}
+                      secureTextEntry={true}
+                      placeholder="Confirmer le mot de passe"
+                      placeholderTextColor={colors.placeholder}
+                    />
+
+                    {error ? (
+                      <Text style={styles.error}>{error}</Text>
+                    ) : null}
+
+                    <TouchableOpacity
+                      style={styles.button}
+                      onPress={onSubmit}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={styles.buttonText}>S'inscrire</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </KeyboardAvoidingView>
+            )
           }}
         </UsernameContext.Consumer>
       )}

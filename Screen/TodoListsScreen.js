@@ -1,10 +1,14 @@
 import React from "react";
-import { View, Button} from "react-native";
+import { View, Text} from "react-native";
+import { styles } from '../styles/TodoListsScreen.styles'
 
 export default function TodoListsScreen(){
     return (
-        <View>
-            <Text>Liste des TodoList</Text>
+        <View style={styles.container}>
+            <View style={styles.content}>
+                <Text style={styles.title}>Mes listes</Text>
+                <Text style={styles.subtitle}>Aucune liste pour le moment</Text>
+            </View>
         </View>
     )
 }
