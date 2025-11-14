@@ -1,36 +1,44 @@
-import {React, useState} from "react";
-import { View, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, Platform} from "react-native";
-import { TokenContext, UsernameContext } from '../Context/Context'
-import { signIn } from "../components/SignIn"
-import { styles } from '../styles/SignInScreen.styles'
-import { colors } from '../styles/theme';
+import { React, useState } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-export default function SignInScreen ({ navigation }) {
-  const [login, setLogin] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
+import { signIn } from "../components/SignIn";
+import Progress from "../components/UI/Progress";
+import { TokenContext, UsernameContext } from "../Context/Context";
+import { styles } from "../styles/SignInScreen.styles";
+import { colors } from "../styles/theme";
+
+export default function SignInScreen({ navigation }) {
+  const [login, setLogin] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   return (
     <TokenContext.Consumer>
       {([token, setToken]) => (
         <UsernameContext.Consumer>
           {([username, setUsername]) => {
-
             const onSubmit = () => {
               signIn(login, password)
-                    .then(token => {
-                      setToken(token)
-                      setUsername(login)
-                      navigation.navigate('Home')
-                    })
-                    .catch(err => {
-                      setError(err.message)
-                    })
-            }
+                .then((token) => {
+                  setToken(token);
+                  setUsername(login);
+                  // Navigation automatique via TokenContext
+                })
+                .catch((err) => {
+                  setError(err.message);
+                });
+            };
 
             return (
               <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={styles.container}
               >
                 <View style={styles.content}>
@@ -55,9 +63,7 @@ export default function SignInScreen ({ navigation }) {
                       placeholderTextColor={colors.placeholder}
                     />
 
-                    {error ? (
-                      <Text style={styles.error}>{error}</Text>
-                    ) : null}
+                    {error ? <Text style={styles.error}>{error}</Text> : null}
 
                     <TouchableOpacity
                       style={styles.button}
@@ -69,11 +75,10 @@ export default function SignInScreen ({ navigation }) {
                   </View>
                 </View>
               </KeyboardAvoidingView>
-            )
-
+            );
           }}
         </UsernameContext.Consumer>
       )}
     </TokenContext.Consumer>
-  )
+  );
 }

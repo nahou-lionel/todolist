@@ -1,18 +1,34 @@
-import React from 'react'
-import { NavigationContainer } from '@react-navigation/native'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { TokenContext } from '../Context/Context'
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import React from "react";
+import { TokenContext } from "../Context/Context";
 
-import TodoListsScreen from '../Screen/TodoListsScreen'
-import HomeScreen from '../Screen/HomeScreen'
-import SignInScreen from '../Screen/SignInScreen'
-import SignOutScreen from '../Screen/SignOutScreen'
-import SignUpScreen from '../Screen/SignUpScreen'
-import { navigationTheme } from '../styles/Navigation.styles'
+import DetailsScreen from "../Screen/DetailsScreen";
+import HomeScreen from "../Screen/HomeScreen";
+import SignInScreen from "../Screen/SignInScreen";
+import SignOutScreen from "../Screen/SignOutScreen";
+import SignUpScreen from "../Screen/SignUpScreen";
+import TodoListsScreen from "../Screen/TodoListsScreen";
+import { navigationTheme } from "../styles/Navigation.styles";
 
-const Tab = createBottomTabNavigator()
+const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
-export default function Navigation () {
+// Stack Navigator for TodoLists and Details
+function TodoListsStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName="TodoListsMain"
+    >
+      <Stack.Screen name="TodoListsMain" component={TodoListsScreen} />
+      <Stack.Screen name="Details" component={DetailsScreen} />
+    </Stack.Navigator>
+  );
+}
+
+export default function Navigation() {
   return (
     <TokenContext.Consumer>
       {([token, setToken]) => (
@@ -20,37 +36,37 @@ export default function Navigation () {
           {token == null ? (
             <Tab.Navigator screenOptions={navigationTheme.screenOptions}>
               <Tab.Screen
-                name='SignIn'
+                name="SignIn"
                 component={SignInScreen}
-                options={{ tabBarLabel: 'Connexion' }}
+                options={{ tabBarLabel: "Connexion" }}
               />
               <Tab.Screen
-                name='SignUp'
+                name="SignUp"
                 component={SignUpScreen}
-                options={{ tabBarLabel: 'Inscription' }}
+                options={{ tabBarLabel: "Inscription" }}
               />
             </Tab.Navigator>
           ) : (
             <Tab.Navigator screenOptions={navigationTheme.screenOptions}>
               <Tab.Screen
-                name='Home'
+                name="Home"
                 component={HomeScreen}
-                options={{ tabBarLabel: 'Accueil' }}
+                options={{ tabBarLabel: "Accueil" }}
               />
               <Tab.Screen
-                name='TodoLists'
-                component={TodoListsScreen}
-                options={{ tabBarLabel: 'Mes listes' }}
+                name="TodoLists"
+                component={TodoListsStack}
+                options={{ tabBarLabel: "Mes listes" }}
               />
               <Tab.Screen
-                name='SignOut'
+                name="SignOut"
                 component={SignOutScreen}
-                options={{ tabBarLabel: 'Déconnexion' }}
+                options={{ tabBarLabel: "Déconnexion" }}
               />
             </Tab.Navigator>
           )}
         </NavigationContainer>
       )}
     </TokenContext.Consumer>
-  )
+  );
 }

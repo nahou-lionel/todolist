@@ -22,7 +22,7 @@ export default function SignUpScreen ({ navigation }) {
                         .then(token => {
                             setToken(token)
                             setUsername(login)
-                            navigation.navigate('Home')
+                            // Navigation automatique via TokenContext
                         })
                         .catch(err => {
                             setError(err.message)
