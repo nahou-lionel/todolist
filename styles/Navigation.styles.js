@@ -1,10 +1,10 @@
-import { colors, fontSize } from './theme'
+import { fontSize } from './theme'
 
-export const navigationTheme = {
+export const getNavigationTheme = (colors) => ({
   screenOptions: {
     headerShown: false,
     tabBarStyle: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.card,
       borderTopWidth: 1,
       borderTopColor: colors.border,
       height: 60,
@@ -12,10 +12,10 @@ export const navigationTheme = {
       paddingTop: 8,
     },
     tabBarActiveTintColor: colors.primary,
-    tabBarInactiveTintColor: colors.placeholder,
+    tabBarInactiveTintColor: colors.textSecondary,
     tabBarLabelStyle: {
       fontSize: fontSize.small,
       fontWeight: '500',
     },
   },
-}
+});

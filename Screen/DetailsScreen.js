@@ -1,10 +1,34 @@
+import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
 import TodoListDetails from "../components/TodoListDetails";
-import { colors, spacing } from "../styles/theme";
+import { useTheme } from "../hooks/useTheme";
+import { spacing } from "../styles/theme";
 
 export default function DetailsScreen({ navigation, route }) {
+  const { colors } = useTheme();
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      backgroundColor: colors.background,
+    },
+    backButton: {
+      padding: spacing.sm,
+      alignSelf: "flex-start",
+    },
+    content: {
+      flex: 1,
+    },
+  });
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -22,24 +46,3 @@ export default function DetailsScreen({ navigation, route }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    backgroundColor: colors.background,
-  },
-  backButton: {
-    padding: spacing.sm,
-    alignSelf: "flex-start",
-  },
-  content: {
-    flex: 1,
-  },
-});

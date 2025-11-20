@@ -1,5 +1,5 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,27 +7,37 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { colors, fontSize, spacing } from "../../styles/theme";
+import { useTheme } from "../../hooks/useTheme";
+import { fontSize, spacing } from "../../styles/theme";
 import Progress from "./Progress";
 
-export default function TodoListItem({
+function TodoListItem({
   item,
   onDelete,
   onEdit,
   navigation,
   style,
 }) {
+  const { colors } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(item.title);
 
+  // Mettre à jour editedTitle quand item.title change (mais pas en mode édition)
+  useEffect(() => {
+    if (!isEditing) {
+      setEditedTitle(item.title);
+    }
+  }, [item.title, isEditing]);
+
   const handlePress = () => {
     if (!isEditing) {
-      navigation?.navigate("Details", { id: item.id });
+      navigation?.navigate("Details", { id: item.id, title: item.title });
     }
   };
 
   const handleEdit = (e) => {
     e.stopPropagation();
+    setEditedTitle(item.title); // S'assurer d'avoir le titre actuel
     setIsEditing(true);
   };
 
@@ -48,6 +58,58 @@ export default function TodoListItem({
   const totalTodos = item.totalTodos || 0;
   const completedTodos = item.completedTodos || 0;
   const completionPercentage = item.completionPercentage || 0;
+
+  // Mémoriser les styles pour éviter les re-renders
+  const styles = useMemo(() => StyleSheet.create({
+    container: {
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.lg,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      backgroundColor: colors.card,
+    },
+    topRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: spacing.sm,
+    },
+    titleContainer: {
+      flex: 1,
+      marginRight: spacing.md,
+    },
+    title: {
+      fontSize: fontSize.medium,
+      color: colors.text,
+      fontWeight: "500",
+    },
+    input: {
+      fontSize: fontSize.medium,
+      color: colors.text,
+      fontWeight: "400",
+      padding: spacing.sm,
+      borderWidth: 1,
+      borderColor: colors.primary,
+      borderRadius: 4,
+      backgroundColor: colors.card,
+    },
+    actions: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    actionButton: {
+      padding: spacing.sm,
+      marginLeft: spacing.xs,
+    },
+    bottomRow: {
+      marginTop: spacing.xs,
+    },
+    statsText: {
+      fontSize: fontSize.small,
+      color: colors.textSecondary,
+      marginBottom: spacing.xs,
+    },
+  }), [colors]);
 
   return (
     <TouchableOpacity
@@ -87,7 +149,10 @@ export default function TodoListItem({
                   color={colors.textSecondary}
                 />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.actionButton} onPress={handleSave}>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={handleSave}
+              >
                 <MaterialIcons name="check" size={24} color={colors.primary} />
               </TouchableOpacity>
             </>
@@ -128,53 +193,14 @@ export default function TodoListItem({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    backgroundColor: colors.background,
-  },
-  topRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: spacing.sm,
-  },
-  titleContainer: {
-    flex: 1,
-    marginRight: spacing.md,
-  },
-  title: {
-    fontSize: fontSize.medium,
-    color: colors.text,
-    fontWeight: "500",
-  },
-  input: {
-    fontSize: fontSize.medium,
-    color: colors.text,
-    fontWeight: "400",
-    padding: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.primary,
-    borderRadius: 4,
-    backgroundColor: colors.background,
-  },
-  actions: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  actionButton: {
-    padding: spacing.sm,
-    marginLeft: spacing.xs,
-  },
-  bottomRow: {
-    marginTop: spacing.xs,
-  },
-  statsText: {
-    fontSize: fontSize.small,
-    color: colors.textSecondary,
-    marginBottom: spacing.xs,
-  },
+// Mémoiser le composant pour éviter les re-renders inutiles
+export default React.memo(TodoListItem, (prevProps, nextProps) => {
+  // Ne re-render que si ces props changent
+  return (
+    prevProps.item.id === nextProps.item.id &&
+    prevProps.item.title === nextProps.item.title &&
+    prevProps.item.totalTodos === nextProps.item.totalTodos &&
+    prevProps.item.completedTodos === nextProps.item.completedTodos &&
+    prevProps.item.completionPercentage === nextProps.item.completionPercentage
+  );
 });

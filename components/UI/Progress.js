@@ -1,13 +1,15 @@
 import React from "react";
-import { StyleSheet, View } from "react-native-web";
-import { colors } from "../../styles/theme";
+import { StyleSheet, View } from "react-native";
+import { useTheme } from "../../hooks/useTheme";
 
 export default function Progress({ percentage }) {
+  const { colors } = useTheme();
+
   const styles = StyleSheet.create({
     container: {
       height: 10,
       width: "100%",
-      backgroundColor: "#e0e0de",
+      backgroundColor: colors.border,
       borderRadius: 5,
     },
     content: {
@@ -17,6 +19,7 @@ export default function Progress({ percentage }) {
       backgroundColor: colors.primary,
     },
   });
+
   return (
     <View style={styles.container}>
       <View style={styles.content}></View>

@@ -1,9 +1,12 @@
 import {React, useContext} from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { TokenContext, UsernameContext } from '../Context/Context'
-import { styles } from '../styles/SignOutScreen.styles'
+import { createStyles } from '../styles/SignOutScreen.styles'
+import { useTheme } from '../hooks/useTheme';
 
 export default function SignOutScreen ({ navigation, route }) {
+  const { colors, shadows } = useTheme();
+  const styles = createStyles(colors, shadows);
   const [token, setToken] = useContext(TokenContext)
   const [username, setUsername] = useContext(UsernameContext)
   const signOut = ()=>{

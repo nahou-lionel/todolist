@@ -11,10 +11,12 @@ import {
 import { signIn } from "../components/SignIn";
 import Progress from "../components/UI/Progress";
 import { TokenContext, UsernameContext } from "../Context/Context";
-import { styles } from "../styles/SignInScreen.styles";
-import { colors } from "../styles/theme";
+import { useTheme } from "../hooks/useTheme";
+import { createStyles } from "../styles/SignInScreen.styles";
 
 export default function SignInScreen({ navigation }) {
+  const { colors, shadows } = useTheme();
+  const styles = createStyles(colors, shadows);
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");

@@ -2,10 +2,12 @@ import {React, useState} from "react";
 import { View, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, Platform} from "react-native";
 import { TokenContext, UsernameContext } from '../Context/Context'
 import { signUp } from "../components/SignUp"
-import { styles } from '../styles/SignUpScreen.styles'
-import { colors } from '../styles/theme';
+import { createStyles } from '../styles/SignUpScreen.styles'
+import { useTheme } from '../hooks/useTheme';
 
 export default function SignUpScreen ({ navigation }) {
+  const { colors, shadows } = useTheme();
+  const styles = createStyles(colors, shadows);
   const [login, setLogin] = useState("")
   const [password, setPassword] = useState("")
   const [confPassword, setConfPassword] = useState("")

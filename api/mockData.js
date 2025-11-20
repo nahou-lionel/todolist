@@ -102,6 +102,14 @@ export const MockDataStore = {
     return false
   },
 
+  deleteUserAccount: (username) => {
+    const user = users.find(u => u.username === username)
+    if (user) {
+      return MockDataStore.deleteUser(user.id)
+    }
+    return false
+  },
+
   // TodoList operations
   getTodoLists: (ownerId) => {
     return todoLists.filter(tl => tl.ownerId === ownerId)

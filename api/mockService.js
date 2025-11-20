@@ -52,6 +52,21 @@ export const MockAPIService = {
     return newUser.token
   },
 
+  deleteAccount: async (token) => {
+    await delay(API_CONFIG.MOCK_DELAY)
+
+    const user = MockDataStore.findUserByToken(token)
+
+    if (!user) {
+      throw createError('User not found or invalid token')
+    }
+
+    // Delete all user's todos and lists
+    MockDataStore.deleteUserAccount(user.username)
+
+    return true
+  },
+
   // User operations
   getUser: async (token) => {
     await delay(API_CONFIG.MOCK_DELAY)

@@ -53,6 +53,16 @@ const RealAPIService = {
     return data.signUp
   },
 
+  deleteAccount: async (token) => {
+    const query = `
+      mutation DeleteAccount {
+        deleteAccount
+      }
+    `
+    const data = await RealAPIService.graphqlRequest(query, {}, token)
+    return data.deleteAccount
+  },
+
   // TodoList operations
   getTodoLists: async (token, username) => {
     const query = `
@@ -247,6 +257,7 @@ export const API = API_CONFIG.USE_MOCK_API ? MockAPIService : RealAPIService
 export const {
   signIn,
   signUp,
+  deleteAccount,
   getTodoLists,
   createTodoList,
   updateTodoList,

@@ -1,16 +1,17 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { TokenContext } from "../Context/Context";
 
 import DetailsScreen from "../Screen/DetailsScreen";
-import HomeScreen from "../Screen/HomeScreen";
+import SettingsScreen from "../Screen/SettingsScreen";
 import SignInScreen from "../Screen/SignInScreen";
-import SignOutScreen from "../Screen/SignOutScreen";
 import SignUpScreen from "../Screen/SignUpScreen";
 import TodoListsScreen from "../Screen/TodoListsScreen";
-import { navigationTheme } from "../styles/Navigation.styles";
+import { getNavigationTheme } from "../styles/Navigation.styles";
+import { useTheme } from "../hooks/useTheme";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -28,40 +29,71 @@ function TodoListsStack() {
   );
 }
 
-export default function Navigation() {
+function NavigationContent() {
+  const { colors, isDarkMode } = useTheme();
+  const navigationTheme = getNavigationTheme(colors);
+
+  // Theme pour NavigationContainer
+  const reactNavigationTheme = {
+    dark: isDarkMode,
+    colors: {
+      primary: colors.primary,
+      background: colors.background,
+      card: colors.card,
+      text: colors.text,
+      border: colors.border,
+      notification: colors.primary,
+    },
+  };
+
   return (
     <TokenContext.Consumer>
       {([token, setToken]) => (
-        <NavigationContainer>
+        <NavigationContainer theme={reactNavigationTheme}>
           {token == null ? (
             <Tab.Navigator screenOptions={navigationTheme.screenOptions}>
               <Tab.Screen
                 name="SignIn"
                 component={SignInScreen}
-                options={{ tabBarLabel: "Connexion" }}
+                options={{
+                  tabBarLabel: "Connexion",
+                  tabBarIcon: ({ color, size }) => (
+                    <MaterialIcons name="login" size={size} color={color} />
+                  ),
+                }}
               />
               <Tab.Screen
                 name="SignUp"
                 component={SignUpScreen}
-                options={{ tabBarLabel: "Inscription" }}
+                options={{
+                  tabBarLabel: "Inscription",
+                  tabBarIcon: ({ color, size }) => (
+                    <MaterialIcons name="person-add" size={size} color={color} />
+                  ),
+                }}
               />
             </Tab.Navigator>
           ) : (
             <Tab.Navigator screenOptions={navigationTheme.screenOptions}>
               <Tab.Screen
-                name="Home"
-                component={HomeScreen}
-                options={{ tabBarLabel: "Accueil" }}
-              />
-              <Tab.Screen
                 name="TodoLists"
                 component={TodoListsStack}
-                options={{ tabBarLabel: "Mes listes" }}
+                options={{
+                  tabBarLabel: "Mes listes",
+                  tabBarIcon: ({ color, size }) => (
+                    <MaterialIcons name="list" size={size} color={color} />
+                  ),
+                }}
               />
               <Tab.Screen
-                name="SignOut"
-                component={SignOutScreen}
-                options={{ tabBarLabel: "Déconnexion" }}
+                name="Settings"
+                component={SettingsScreen}
+                options={{
+                  tabBarLabel: "Paramètres",
+                  tabBarIcon: ({ color, size }) => (
+                    <MaterialIcons name="settings" size={size} color={color} />
+                  ),
+                }}
               />
             </Tab.Navigator>
           )}
@@ -69,4 +101,8 @@ export default function Navigation() {
       )}
     </TokenContext.Consumer>
   );
+}
+
+export default function Navigation() {
+  return <NavigationContent />;
 }
