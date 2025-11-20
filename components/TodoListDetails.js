@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { ActivityIndicator, Alert, FlatList, Text, View } from "react-native";
 import { TokenContext } from "../Context/Context";
 import { useTheme } from "../hooks/useTheme";
@@ -73,52 +73,6 @@ export default function TodoListDetails({ navigation, route }) {
         setLoading(false);
       });
   }, [token, route.params.id]);
-
-  // Cache pour conserver les références d'objets inchangés
-  const todosCache = useRef({});
-
-  // Mémoriser les todos avec leurs images pour éviter les re-créations d'objets
-  const todosWithImages = useMemo(() => {
-    const newTodosWithImages = [];
-    const cache = todosCache.current;
-    const newCache = {};
-
-    todos.forEach(todo => {
-      const imageUri = todoImages[todo.id];
-      const cachedTodo = cache[todo.id];
-
-      // Si le todo en cache existe et que rien n'a changé, réutiliser l'objet
-      if (
-        cachedTodo &&
-        cachedTodo.id === todo.id &&
-        cachedTodo.content === todo.content &&
-        cachedTodo.done === todo.done &&
-        cachedTodo.imageUri === imageUri
-      ) {
-        newCache[todo.id] = cachedTodo;
-        newTodosWithImages.push(cachedTodo);
-      } else {
-        // Sinon, créer un nouvel objet
-        const newTodo = { ...todo, imageUri };
-        newCache[todo.id] = newTodo;
-        newTodosWithImages.push(newTodo);
-      }
-    });
-
-    // Mettre à jour le cache
-    todosCache.current = newCache;
-    return newTodosWithImages;
-  }, [todos, todoImages]);
-
-  // Mémoriser la fonction de rendu
-  const renderTodoItem = useCallback(({ item }) => (
-    <TodoItem
-      item={item}
-      onToggle={() => handleToggleTodo(item.id, item.done)}
-      onEdit={handleEditTodo}
-      onDelete={() => handleDeleteTodo(item.id)}
-    />
-  ), [handleToggleTodo, handleEditTodo, handleDeleteTodo]);
 
   const handleExport = async (listTitle, todos, format) => {
     await exportTodoList(listTitle, todos, format);
@@ -253,8 +207,18 @@ export default function TodoListDetails({ navigation, route }) {
           <Text style={styles.subtitle}>Aucun todo pour le moment</Text>
         ) : (
           <FlatList
-            data={todosWithImages}
-            renderItem={renderTodoItem}
+            data={todos}
+            renderItem={({ item }) => {
+              const todoWithImage = { ...item, imageUri: todoImages[item.id] };
+              return (
+                <TodoItem
+                  item={todoWithImage}
+                  onToggle={() => handleToggleTodo(item.id, item.done)}
+                  onEdit={handleEditTodo}
+                  onDelete={() => handleDeleteTodo(item.id)}
+                />
+              );
+            }}
             keyExtractor={(item) => item.id}
             style={styles.list}
             keyboardShouldPersistTaps="handled"

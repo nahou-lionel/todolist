@@ -1,5 +1,5 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -11,7 +11,7 @@ import { useTheme } from "../../hooks/useTheme";
 import { fontSize, spacing } from "../../styles/theme";
 import Progress from "./Progress";
 
-function TodoListItem({
+export default function TodoListItem({
   item,
   onDelete,
   onEdit,
@@ -59,8 +59,7 @@ function TodoListItem({
   const completedTodos = item.completedTodos || 0;
   const completionPercentage = item.completionPercentage || 0;
 
-  // Mémoriser les styles pour éviter les re-renders
-  const styles = useMemo(() => StyleSheet.create({
+  const styles = StyleSheet.create({
     container: {
       paddingVertical: spacing.md,
       paddingHorizontal: spacing.lg,
@@ -109,7 +108,7 @@ function TodoListItem({
       color: colors.textSecondary,
       marginBottom: spacing.xs,
     },
-  }), [colors]);
+  });
 
   return (
     <TouchableOpacity
@@ -192,15 +191,3 @@ function TodoListItem({
     </TouchableOpacity>
   );
 }
-
-// Mémoiser le composant pour éviter les re-renders inutiles
-export default React.memo(TodoListItem, (prevProps, nextProps) => {
-  // Ne re-render que si ces props changent
-  return (
-    prevProps.item.id === nextProps.item.id &&
-    prevProps.item.title === nextProps.item.title &&
-    prevProps.item.totalTodos === nextProps.item.totalTodos &&
-    prevProps.item.completedTodos === nextProps.item.completedTodos &&
-    prevProps.item.completionPercentage === nextProps.item.completionPercentage
-  );
-});

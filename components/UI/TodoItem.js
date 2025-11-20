@@ -1,5 +1,5 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Image,
   StyleSheet,
@@ -11,7 +11,7 @@ import {
 import { fontSize, spacing } from "../../styles/theme";
 import { useTheme } from "../../hooks/useTheme";
 
-const TodoItem = ({ item, onToggle, onDelete, onEdit, style }) => {
+export default function TodoItem({ item, onToggle, onDelete, onEdit, style }) {
   const { colors } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(item.content);
@@ -42,10 +42,7 @@ const TodoItem = ({ item, onToggle, onDelete, onEdit, style }) => {
     setIsEditing(false);
   };
 
-  // Mémoriser les styles pour éviter les re-renders
-  const styles = useMemo(
-    () =>
-      StyleSheet.create({
+  const styles = StyleSheet.create({
         container: {
           flexDirection: "column",
           paddingVertical: spacing.md,
@@ -106,9 +103,7 @@ const TodoItem = ({ item, onToggle, onDelete, onEdit, style }) => {
         deleteButton: {
           padding: spacing.sm,
         },
-      }),
-    [colors]
-  );
+      });
 
   return (
     <View style={[styles.container, style]}>
@@ -200,15 +195,4 @@ const TodoItem = ({ item, onToggle, onDelete, onEdit, style }) => {
       )}
     </View>
   );
-};
-
-// Mémoiser le composant pour éviter les re-renders inutiles
-export default React.memo(TodoItem, (prevProps, nextProps) => {
-  // Ne re-render que si ces props changent
-  return (
-    prevProps.item.id === nextProps.item.id &&
-    prevProps.item.content === nextProps.item.content &&
-    prevProps.item.done === nextProps.item.done &&
-    prevProps.item.imageUri === nextProps.item.imageUri
-  );
-});
+}

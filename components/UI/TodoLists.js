@@ -1,22 +1,19 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { FlatList, StyleSheet } from "react-native";
 import TodoListItem from "./TodoListItem";
 
-function TodoLists(props) {
-  // Mémoriser la fonction de rendu pour éviter les re-créations
-  const renderItem = useCallback(({ item }) => (
-    <TodoListItem
-      item={item}
-      onDelete={props.delete}
-      onEdit={props.edit}
-      navigation={props.navigation}
-    />
-  ), [props.delete, props.edit, props.navigation]);
-
+export default function TodoLists(props) {
   return (
     <FlatList
       data={props.data}
-      renderItem={renderItem}
+      renderItem={({ item }) => (
+        <TodoListItem
+          item={item}
+          onDelete={props.delete}
+          onEdit={props.edit}
+          navigation={props.navigation}
+        />
+      )}
       keyExtractor={(item) => item.id}
       style={styles.list}
       keyboardShouldPersistTaps="handled"
@@ -29,8 +26,6 @@ function TodoLists(props) {
     />
   );
 }
-
-export default React.memo(TodoLists);
 
 const styles = StyleSheet.create({
   list: {

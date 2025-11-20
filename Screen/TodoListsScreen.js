@@ -2,8 +2,6 @@ import { useFocusEffect } from "@react-navigation/native";
 import React, {
   useCallback,
   useContext,
-  useMemo,
-  useRef,
   useState,
 } from "react";
 import { ActivityIndicator, Alert, FlatList, Text, View } from "react-native";
@@ -29,41 +27,6 @@ export default function TodoListsScreen({ navigation }) {
   const [newListTitle, setNewListTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
-
-  // Cache pour conserver les références d'objets inchangés
-  const listsCache = useRef({});
-
-  // Mémoriser les listes pour éviter les re-créations d'objets
-  const memoizedTodoLists = useMemo(() => {
-    const cache = listsCache.current;
-    const newCache = {};
-    const newLists = [];
-
-    todoLists.forEach((list) => {
-      const cachedList = cache[list.id];
-
-      // Si la liste en cache existe et que rien n'a changé, réutiliser l'objet
-      if (
-        cachedList &&
-        cachedList.id === list.id &&
-        cachedList.title === list.title &&
-        cachedList.totalTodos === list.totalTodos &&
-        cachedList.completedTodos === list.completedTodos &&
-        cachedList.completionPercentage === list.completionPercentage
-      ) {
-        newCache[list.id] = cachedList;
-        newLists.push(cachedList);
-      } else {
-        // Sinon, créer un nouvel objet
-        newCache[list.id] = list;
-        newLists.push(list);
-      }
-    });
-
-    // Mettre à jour le cache
-    listsCache.current = newCache;
-    return newLists;
-  }, [todoLists]);
 
   const loadTodoLists = useCallback(async () => {
     setLoading(true);
@@ -200,7 +163,7 @@ export default function TodoListsScreen({ navigation }) {
           <Text style={styles.subtitle}>Aucune liste pour le moment</Text>
         ) : (
           <TodoLists
-            data={memoizedTodoLists}
+            data={todoLists}
             delete={handleDeleteList}
             edit={handleEditList}
             navigation={navigation}
