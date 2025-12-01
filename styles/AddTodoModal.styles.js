@@ -49,8 +49,16 @@ export const createStyles = (colors, shadows) =>
       marginTop: spacing.md,
     },
 
+    // Ligne contenant l'input et le trombone côte à côte
+    inputRow: {
+      flexDirection: "row",
+      alignItems: "flex-end",
+      gap: spacing.sm,
+    },
+
     // Input texte
     input: {
+      flex: 1,
       fontSize: fontSize.regular,
       color: colors.text,
       padding: spacing.md,
@@ -60,6 +68,12 @@ export const createStyles = (colors, shadows) =>
       backgroundColor: colors.background,
       minHeight: 80,
       textAlignVertical: "top",
+    },
+
+    // Bouton trombone à côté de l'input
+    attachmentButton: {
+      padding: spacing.sm,
+      paddingBottom: spacing.md,
     },
 
     // Boutons d'action du modal

@@ -69,27 +69,43 @@ export default function AddTodoModal({ visible, onClose, onSubmit, loading }) {
           <ScrollView style={styles.modalContent}>
             {/* Input texte */}
             <Text style={styles.label}>Description</Text>
-            <TextInput
-              style={styles.input}
-              value={todoContent}
-              onChangeText={setTodoContent}
-              placeholder="Qu'avez-vous à faire ?"
-              placeholderTextColor={colors.placeholder}
-              multiline
-              numberOfLines={3}
-              autoFocus
-              editable={!loading}
-            />
+            <View style={styles.inputRow}>
+              <TextInput
+                style={styles.input}
+                value={todoContent}
+                onChangeText={setTodoContent}
+                placeholder="Qu'avez-vous à faire ?"
+                placeholderTextColor={colors.placeholder}
+                multiline
+                numberOfLines={3}
+                autoFocus
+                editable={!loading}
+              />
 
-            {/* Sélecteur d'image */}
-            <Text style={styles.label}>Image (optionnel)</Text>
-            <ImagePickerButton
-              imageUri={selectedImage}
-              onPickImage={pickImage}
-              onRemoveImage={clearImage}
-              disabled={loading}
-              loading={imageLoading}
-            />
+              {/* Icône trombone à côté de l'input */}
+              <TouchableOpacity
+                style={styles.attachmentButton}
+                onPress={pickImage}
+                disabled={loading || imageLoading}
+              >
+                <MaterialIcons
+                  name="attach-file"
+                  size={22}
+                  color={selectedImage ? colors.primary : colors.textSecondary}
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Aperçu de l'image sélectionnée */}
+            {selectedImage && (
+              <ImagePickerButton
+                imageUri={selectedImage}
+                onPickImage={pickImage}
+                onRemoveImage={clearImage}
+                disabled={loading}
+                loading={imageLoading}
+              />
+            )}
           </ScrollView>
 
           {/* Boutons d'action */}
