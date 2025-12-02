@@ -41,19 +41,33 @@ export default function TodoListItem({
   };
 
   const handleSave = (e) => {
-    e?.stopPropagation();
+    if (e) {
+      e.preventDefault?.();
+      e.stopPropagation?.();
+      e.nativeEvent?.stopPropagation?.();
+    }
     if (editedTitle.trim() && editedTitle !== item.title) {
       onEdit?.(item.id, editedTitle.trim());
     } else {
       setEditedTitle(item.title);
     }
-    setIsEditing(false);
+    // Utiliser setTimeout pour éviter que le clic ne se propage aux boutons suivants
+    setTimeout(() => {
+      setIsEditing(false);
+    }, 0);
   };
 
   const handleCancel = (e) => {
-    e?.stopPropagation();
+    if (e) {
+      e.preventDefault?.();
+      e.stopPropagation?.();
+      e.nativeEvent?.stopPropagation?.();
+    }
     setEditedTitle(item.title);
-    setIsEditing(false);
+    // Utiliser setTimeout pour éviter que le clic ne se propage aux boutons suivants
+    setTimeout(() => {
+      setIsEditing(false);
+    }, 0);
   };
 
   const totalTodos = item.totalTodos || 0;
