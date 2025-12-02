@@ -280,37 +280,6 @@ export default function SettingsScreen({ navigation }) {
               />
             )}
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.themeButton,
-              themeMode === "auto" && styles.themeButtonActive,
-            ]}
-            onPress={() => setThemeMode("auto")}
-            activeOpacity={0.7}
-          >
-            <MaterialIcons
-              name="brightness-auto"
-              size={24}
-              color={themeMode === "auto" ? colors.primary : colors.text}
-            />
-            <Text
-              style={[
-                styles.themeButtonText,
-                themeMode === "auto" && styles.themeButtonTextActive,
-              ]}
-            >
-              Automatique
-            </Text>
-            {themeMode === "auto" && (
-              <MaterialIcons
-                name="check"
-                size={20}
-                color={colors.primary}
-                style={styles.checkIcon}
-              />
-            )}
-          </TouchableOpacity>
         </View>
 
         {/* Section Actions */}
