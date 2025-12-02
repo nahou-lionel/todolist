@@ -40,34 +40,18 @@ export default function TodoListItem({
     setIsEditing(true);
   };
 
-  const handleSave = (e) => {
-    if (e) {
-      e.preventDefault?.();
-      e.stopPropagation?.();
-      e.nativeEvent?.stopPropagation?.();
-    }
+  const handleSave = () => {
     if (editedTitle.trim() && editedTitle !== item.title) {
       onEdit?.(item.id, editedTitle.trim());
     } else {
       setEditedTitle(item.title);
     }
-    // Utiliser setTimeout pour éviter que le clic ne se propage aux boutons suivants
-    setTimeout(() => {
-      setIsEditing(false);
-    }, 0);
+    setIsEditing(false);
   };
 
-  const handleCancel = (e) => {
-    if (e) {
-      e.preventDefault?.();
-      e.stopPropagation?.();
-      e.nativeEvent?.stopPropagation?.();
-    }
+  const handleCancel = () => {
     setEditedTitle(item.title);
-    // Utiliser setTimeout pour éviter que le clic ne se propage aux boutons suivants
-    setTimeout(() => {
-      setIsEditing(false);
-    }, 0);
+    setIsEditing(false);
   };
 
   const totalTodos = item.totalTodos || 0;
@@ -140,7 +124,6 @@ export default function TodoListItem({
               style={styles.input}
               value={editedTitle}
               onChangeText={setEditedTitle}
-              onBlur={handleSave}
               onSubmitEditing={handleSave}
               autoFocus
               selectTextOnFocus
