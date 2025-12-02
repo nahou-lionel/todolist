@@ -35,16 +35,12 @@ export default function TodoListItem({
     }
   };
 
-  const handleEdit = (e) => {
-    e.stopPropagation();
+  const handleEdit = () => {
     setEditedTitle(item.title); // S'assurer d'avoir le titre actuel
     setIsEditing(true);
   };
 
-  const handleSave = (e) => {
-    if (e) {
-      e.stopPropagation();
-    }
+  const handleSave = () => {
     if (editedTitle.trim() && editedTitle !== item.title) {
       onEdit?.(item.id, editedTitle.trim());
     } else {
@@ -53,10 +49,7 @@ export default function TodoListItem({
     setIsEditing(false);
   };
 
-  const handleCancel = (e) => {
-    if (e) {
-      e.stopPropagation();
-    }
+  const handleCancel = () => {
     setEditedTitle(item.title);
     setIsEditing(false);
   };
@@ -174,8 +167,7 @@ export default function TodoListItem({
               {onDelete && (
                 <TouchableOpacity
                   style={styles.actionButton}
-                  onPress={(e) => {
-                    e.stopPropagation();
+                  onPress={() => {
                     onDelete(item.id);
                   }}
                 >
