@@ -8,7 +8,7 @@ import * as Sharing from "expo-sharing";
  * @returns {string} - Contenu JSON formaté
  */
 const exportToJSON = (listTitle, todos) => {
-  // TODO: Créer un objet avec les données de la liste
+  // Créer un objet avec les données de la liste
   const data = {
     title: listTitle,
     exportDate: new Date().toISOString(),
@@ -22,7 +22,7 @@ const exportToJSON = (listTitle, todos) => {
     })),
   };
 
-  // TODO: Convertir en JSON avec indentation (2 espaces)
+  // Convertir en JSON avec indentation (2 espaces)
   return JSON.stringify(data, null, 2);
 };
 
@@ -33,10 +33,10 @@ const exportToJSON = (listTitle, todos) => {
  * @returns {string} - Contenu CSV
  */
 const exportToCSV = (listTitle, todos) => {
-  // TODO: Créer la ligne d'en-têtes
+  // Créer la ligne d'en-têtes
   const headers = "Statut,Contenu,Date de création\n";
 
-  // TODO: Créer les lignes de données
+  // Créer les lignes de données
   const rows = todos
     .map((todo) => {
       const status = todo.done ? "Terminé" : "En cours";
@@ -59,14 +59,14 @@ const exportToCSV = (listTitle, todos) => {
  * @returns {string} - Contenu texte formaté
  */
 const exportToText = (listTitle, todos) => {
-  // TODO: Calculer les statistiques
+  // Calculer les statistiques
 
   const completedCount = todos.filter((t) => t.done).length;
   const totalCount = todos.length;
   const percentage =
     totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-  // TODO: Construire le texte formaté
+  // Construire le texte formaté
   let text = `${listTitle}\n`;
   text += `${"=".repeat(listTitle.length)}\n\n`;
   text += `Exporté le : ${new Date().toLocaleDateString(
@@ -145,23 +145,23 @@ const generateFilename = (title, format) => {
  */
 const saveAndShare = async (content, filename, format) => {
   try {
-    // TODO: 1. Créer le chemin du fichier dans le cache
+    // 1. Créer le chemin du fichier dans le cache
     const fileUri = FileSystem.cacheDirectory + filename;
 
-    // TODO: 2. Écrire le contenu dans le fichier
+    // 2. Écrire le contenu dans le fichier
     await FileSystem.writeAsStringAsync(fileUri, content, {
       encoding: FileSystem.EncodingType.UTF8,
     });
 
-    // TODO: 3. Vérifier si le partage est disponible
+    // 3. Vérifier si le partage est disponible
     const isAvailable = await Sharing.isAvailableAsync();
 
     if (isAvailable) {
-      // TODO: 4. Partager le fichier
+      // 4. Partager le fichier
       await Sharing.shareAsync(fileUri, {
         mimeType: getMimeType(format),
         dialogTitle: `Partager ${filename}`,
-        UTI: getUTI(format), // Pour iOS
+        UTI: getUTI(format),
       });
     } else {
       throw new Error(
@@ -186,7 +186,7 @@ export const exportTodoList = async (listTitle, todos, format) => {
   try {
     let content;
 
-    // TODO: Générer le contenu selon le format
+    // Générer le contenu selon le format
     switch (format) {
       case "json":
         content = exportToJSON(listTitle, todos);
@@ -201,10 +201,10 @@ export const exportTodoList = async (listTitle, todos, format) => {
         throw new Error(`Format non supporté: ${format}`);
     }
 
-    // TODO: Générer le nom de fichier
+    // Générer le nom de fichier
     const filename = generateFilename(listTitle, format);
 
-    // TODO: Sauvegarder et partager
+    // Sauvegarder et partager
     await saveAndShare(content, filename, format);
 
     return true;

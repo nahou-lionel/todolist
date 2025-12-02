@@ -10,8 +10,8 @@ export const createStyles = (colors, shadows) => ({
     justifyContent: "center",
     alignItems: "center",
     ...shadows.button,
-    elevation: 8, // Pour Android
-    shadowColor: colors.primary, // Ombre de la couleur primaire
+    elevation: 8,
+    shadowColor: colors.primary,
     shadowOffset: {
       width: 0,
       height: 4,

@@ -1,14 +1,12 @@
 import { StyleSheet } from "react-native";
 import {
   borderRadius,
-  getCommonStyles,
+  commonStyles,
   fontSize,
   spacing,
 } from "./theme";
 
 export const createStyles = (colors, shadows) => {
-  const commonStyles = getCommonStyles(colors, shadows);
-
   return StyleSheet.create({
     colors: colors,
     container: commonStyles.container,

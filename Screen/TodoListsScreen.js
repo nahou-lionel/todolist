@@ -1,9 +1,5 @@
 import { useFocusEffect } from "@react-navigation/native";
-import React, {
-  useCallback,
-  useContext,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import { TokenContext, UsernameContext } from "../Context/Context";
 import {
@@ -13,9 +9,9 @@ import {
   updateTodoList,
 } from "../components/TodoLists";
 import { getTodos } from "../components/Todos";
+import AlertModal from "../components/UI/AlertModal";
 import Input from "../components/UI/Input";
 import TodoLists from "../components/UI/TodoLists";
-import AlertModal from "../components/UI/AlertModal";
 import { useTheme } from "../hooks/useTheme";
 import { createStyles } from "../styles/TodoListsScreen.styles";
 
@@ -102,13 +98,10 @@ export default function TodoListsScreen({ navigation }) {
       });
   };
 
-  const handleDeleteList = useCallback(
-    async (listId) => {
-      setListToDelete(listId);
-      setDeleteConfirmVisible(true);
-    },
-    []
-  );
+  const handleDeleteList = useCallback(async (listId) => {
+    setListToDelete(listId);
+    setDeleteConfirmVisible(true);
+  }, []);
 
   const confirmDeleteList = async () => {
     setDeleteConfirmVisible(false);

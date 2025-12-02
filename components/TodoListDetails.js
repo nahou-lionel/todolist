@@ -3,9 +3,11 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import { TokenContext } from "../Context/Context";
 import { useTheme } from "../hooks/useTheme";
-import { useImagePicker } from "../hooks/useImagePicker";
 import { exportTodoList } from "../services/exportService";
-import { deleteImageLocally, saveImageLocally } from "../services/imageStorageService";
+import {
+  deleteImageLocally,
+  saveImageLocally,
+} from "../services/imageStorageService";
 import { createStyles } from "../styles/TodoListDetailsScreen.styles";
 import { createTodo, deleteTodo, getTodos, updateTodo } from "./Todos";
 import AddTodoModal from "./UI/AddTodoModal";
@@ -40,7 +42,9 @@ export default function TodoListDetails({ navigation, route }) {
   useEffect(() => {
     const loadTodoImages = async () => {
       try {
-        const storedImages = await AsyncStorage.getItem(TODO_IMAGES_STORAGE_KEY);
+        const storedImages = await AsyncStorage.getItem(
+          TODO_IMAGES_STORAGE_KEY
+        );
         if (storedImages) {
           setTodoImages(JSON.parse(storedImages));
         }
@@ -56,7 +60,10 @@ export default function TodoListDetails({ navigation, route }) {
   useEffect(() => {
     const saveTodoImages = async () => {
       try {
-        await AsyncStorage.setItem(TODO_IMAGES_STORAGE_KEY, JSON.stringify(todoImages));
+        await AsyncStorage.setItem(
+          TODO_IMAGES_STORAGE_KEY,
+          JSON.stringify(todoImages)
+        );
       } catch (error) {
         console.error("Erreur lors de la sauvegarde des images:", error);
       }
@@ -103,13 +110,15 @@ export default function TodoListDetails({ navigation, route }) {
         try {
           const savedImageUri = await saveImageLocally(imageUri);
           // Associer l'image au todo dans le state local
-          setTodoImages(prev => ({
+          setTodoImages((prev) => ({
             ...prev,
-            [newTodo.id]: savedImageUri
+            [newTodo.id]: savedImageUri,
           }));
         } catch (imageError) {
           console.error("Erreur lors de la sauvegarde de l'image:", imageError);
-          setWarningMessage("Le todo a été créé mais l'image n'a pas pu être sauvegardée");
+          setWarningMessage(
+            "Le todo a été créé mais l'image n'a pas pu être sauvegardée"
+          );
           setWarningModalVisible(true);
         }
       }
@@ -124,37 +133,45 @@ export default function TodoListDetails({ navigation, route }) {
     }
   };
 
-  const handleToggleTodo = useCallback(async (todoId, currentDone) => {
-    try {
-      const updatedTodo = await updateTodo(token, todoId, {
-        done: !currentDone,
-      });
-      setTodos(prevTodos =>
-        prevTodos.map((todo) =>
-          todo.id === todoId ? { ...todo, done: updatedTodo.done } : todo
-        )
-      );
-    } catch (error) {
-      setErrorMessage(error.message || "Impossible de modifier le todo");
-      setErrorModalVisible(true);
-    }
-  }, [token]);
+  const handleToggleTodo = useCallback(
+    async (todoId, currentDone) => {
+      try {
+        const updatedTodo = await updateTodo(token, todoId, {
+          done: !currentDone,
+        });
+        setTodos((prevTodos) =>
+          prevTodos.map((todo) =>
+            todo.id === todoId ? { ...todo, done: updatedTodo.done } : todo
+          )
+        );
+      } catch (error) {
+        setErrorMessage(error.message || "Impossible de modifier le todo");
+        setErrorModalVisible(true);
+      }
+    },
+    [token]
+  );
 
-  const handleEditTodo = useCallback(async (todoId, newContent) => {
-    try {
-      const updatedTodo = await updateTodo(token, todoId, {
-        content: newContent,
-      });
-      setTodos(prevTodos =>
-        prevTodos.map((todo) =>
-          todo.id === todoId ? { ...todo, content: updatedTodo.content } : todo
-        )
-      );
-    } catch (error) {
-      setErrorMessage(error.message || "Impossible de modifier le todo");
-      setErrorModalVisible(true);
-    }
-  }, [token]);
+  const handleEditTodo = useCallback(
+    async (todoId, newContent) => {
+      try {
+        const updatedTodo = await updateTodo(token, todoId, {
+          content: newContent,
+        });
+        setTodos((prevTodos) =>
+          prevTodos.map((todo) =>
+            todo.id === todoId
+              ? { ...todo, content: updatedTodo.content }
+              : todo
+          )
+        );
+      } catch (error) {
+        setErrorMessage(error.message || "Impossible de modifier le todo");
+        setErrorModalVisible(true);
+      }
+    },
+    [token]
+  );
 
   const handleDeleteTodo = useCallback(async (todoId) => {
     setTodoToDelete(todoId);
@@ -165,9 +182,9 @@ export default function TodoListDetails({ navigation, route }) {
     setDeleteConfirmVisible(false);
     try {
       // Supprimer l'image associée si elle existe
-      setTodoImages(prev => {
+      setTodoImages((prev) => {
         if (prev[todoToDelete]) {
-          deleteImageLocally(prev[todoToDelete]).catch(err =>
+          deleteImageLocally(prev[todoToDelete]).catch((err) =>
             console.error("Erreur suppression image:", err)
           );
           const newImages = { ...prev };
@@ -178,7 +195,9 @@ export default function TodoListDetails({ navigation, route }) {
       });
 
       await deleteTodo(token, todoToDelete);
-      setTodos(prevTodos => prevTodos.filter((todo) => todo.id !== todoToDelete));
+      setTodos((prevTodos) =>
+        prevTodos.filter((todo) => todo.id !== todoToDelete)
+      );
     } catch (error) {
       setErrorMessage(error.message || "Impossible de supprimer le todo");
       setErrorModalVisible(true);

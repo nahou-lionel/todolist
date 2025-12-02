@@ -1,9 +1,7 @@
 import { StyleSheet } from 'react-native'
-import { getCommonStyles, spacing, fontSize } from './theme'
+import { commonStyles, spacing, fontSize } from './theme'
 
 export const createStyles = (colors, shadows) => {
-  const commonStyles = getCommonStyles(colors, shadows);
-
   return StyleSheet.create({
     container: commonStyles.container,
     content: {

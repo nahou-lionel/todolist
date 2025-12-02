@@ -1,5 +1,5 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -8,8 +8,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { fontSize, spacing } from "../../styles/theme";
 import { useTheme } from "../../hooks/useTheme";
+import { fontSize, spacing } from "../../styles/theme";
 
 export default function TodoItem({ item, onToggle, onDelete, onEdit, style }) {
   const { colors } = useTheme();
@@ -43,67 +43,67 @@ export default function TodoItem({ item, onToggle, onDelete, onEdit, style }) {
   };
 
   const styles = StyleSheet.create({
-        container: {
-          flexDirection: "column",
-          paddingVertical: spacing.md,
-          paddingHorizontal: spacing.lg,
-          borderBottomWidth: 1,
-          borderBottomColor: colors.border,
-          backgroundColor: colors.card,
-        },
-        mainRow: {
-          flexDirection: "row",
-          alignItems: "center",
-        },
-        checkboxContainer: {
-          marginRight: spacing.md,
-        },
-        contentColumn: {
-          flex: 1,
-          marginRight: spacing.md,
-        },
-        content: {
-          fontSize: fontSize.regular,
-          color: colors.text,
-        },
-        contentDone: {
-          textDecorationLine: "line-through",
-          color: colors.textSecondary,
-        },
-        todoImage: {
-          width: "100%",
-          height: 150,
-          borderRadius: 8,
-          marginTop: spacing.sm,
-          resizeMode: "cover",
-        },
-        todoImageEditing: {
-          opacity: 0.4,
-        },
-        input: {
-          fontSize: fontSize.regular,
-          color: colors.text,
-          flex: 1,
-          padding: spacing.sm,
-          marginRight: spacing.md,
-          borderWidth: 1,
-          borderColor: colors.primary,
-          borderRadius: 4,
-          backgroundColor: colors.card,
-          minHeight: 40,
-        },
-        actions: {
-          flexDirection: "row",
-          alignItems: "center",
-        },
-        actionButton: {
-          padding: spacing.sm,
-          marginLeft: spacing.xs,
-        },
-        deleteButton: {
-          padding: spacing.sm,
-        },
-      });
+    container: {
+      flexDirection: "column",
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.lg,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      backgroundColor: colors.card,
+    },
+    mainRow: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    checkboxContainer: {
+      marginRight: spacing.md,
+    },
+    contentColumn: {
+      flex: 1,
+      marginRight: spacing.md,
+    },
+    content: {
+      fontSize: fontSize.regular,
+      color: colors.text,
+    },
+    contentDone: {
+      textDecorationLine: "line-through",
+      color: colors.textSecondary,
+    },
+    todoImage: {
+      width: "100%",
+      height: 150,
+      borderRadius: 8,
+      marginTop: spacing.sm,
+      resizeMode: "cover",
+    },
+    todoImageEditing: {
+      opacity: 0.4,
+    },
+    input: {
+      fontSize: fontSize.regular,
+      color: colors.text,
+      flex: 1,
+      padding: spacing.sm,
+      marginRight: spacing.md,
+      borderWidth: 1,
+      borderColor: colors.primary,
+      borderRadius: 4,
+      backgroundColor: colors.card,
+      minHeight: 40,
+    },
+    actions: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    actionButton: {
+      padding: spacing.sm,
+      marginLeft: spacing.xs,
+    },
+    deleteButton: {
+      padding: spacing.sm,
+    },
+  });
 
   return (
     <View style={[styles.container, style]}>
@@ -166,11 +166,7 @@ export default function TodoItem({ item, onToggle, onDelete, onEdit, style }) {
                   style={styles.actionButton}
                   onPress={handleEdit}
                 >
-                  <MaterialIcons
-                    name="edit"
-                    size={18}
-                    color={colors.primary}
-                  />
+                  <MaterialIcons name="edit" size={18} color={colors.primary} />
                 </TouchableOpacity>
               )}
               {onDelete && (
@@ -186,7 +182,7 @@ export default function TodoItem({ item, onToggle, onDelete, onEdit, style }) {
         </View>
       </View>
 
-      {/* Affichage de l'image si elle existe - Visible même en édition pour éviter le re-layout */}
+      {/* Affichage de l'image si elle existe */}
       {item.imageUri && (
         <Image
           source={{ uri: item.imageUri }}

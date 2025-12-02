@@ -11,8 +11,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useTheme } from "../../hooks/useTheme";
 import { useImagePicker } from "../../hooks/useImagePicker";
+import { useTheme } from "../../hooks/useTheme";
 import { createStyles } from "../../styles/AddTodoModal.styles";
 import ImagePickerButton from "./ImagePickerButton";
 
@@ -28,8 +28,12 @@ export default function AddTodoModal({ visible, onClose, onSubmit, loading }) {
   const styles = createStyles(colors, shadows);
 
   const [todoContent, setTodoContent] = useState("");
-  const { pickImage, selectedImage, clearImage, isLoading: imageLoading } =
-    useImagePicker();
+  const {
+    pickImage,
+    selectedImage,
+    clearImage,
+    isLoading: imageLoading,
+  } = useImagePicker();
 
   const handleSubmit = () => {
     if (todoContent.trim()) {

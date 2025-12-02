@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  ActivityIndicator,
-  Image,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
 import { useTheme } from "../../hooks/useTheme";
 import { createStyles } from "../../styles/ImagePickerButton.styles";
 
@@ -45,22 +39,4 @@ export default function ImagePickerButton({
       </View>
     );
   }
-
-  // Sinon, afficher le bouton pour ajouter une image (version compacte icône)
-  return (
-    <Pressable
-      style={[styles.addButtonCompact, disabled && styles.addButtonDisabled]}
-      onPress={onPickImage}
-      disabled={disabled || loading}
-    >
-      {loading ? (
-        <ActivityIndicator size="small" color={colors.primary} />
-      ) : (
-        <>
-          <Text style={styles.addButtonIcon}>📷</Text>
-          <Text style={styles.addButtonTextCompact}>Ajouter une image</Text>
-        </>
-      )}
-    </Pressable>
-  );
 }

@@ -5,7 +5,7 @@ import { useTheme } from "../../hooks/useTheme";
 import { createStyles } from "../../styles/FloatingActionButton.styles";
 
 /**
- * Bouton flottant (FAB) pour ajouter une nouvelle tâche
+ * Bouton flottant pour ajouter une nouvelle tâche
  * @param {Function} onPress - Callback lors du clic
  */
 export default function FloatingActionButton({ onPress }) {
@@ -13,11 +13,7 @@ export default function FloatingActionButton({ onPress }) {
   const styles = createStyles(colors, shadows);
 
   return (
-    <TouchableOpacity
-      style={styles.fab}
-      onPress={onPress}
-      activeOpacity={0.8}
-    >
+    <TouchableOpacity style={styles.fab} onPress={onPress} activeOpacity={0.8}>
       <MaterialIcons name="add" size={32} color="#FFFFFF" />
     </TouchableOpacity>
   );

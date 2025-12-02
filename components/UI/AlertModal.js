@@ -1,7 +1,7 @@
-import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import {
   Modal,
+  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -28,7 +28,7 @@ export default function AlertModal({ visible, title, message, buttons = [] }) {
       paddingHorizontal: spacing.xl,
     },
     modalContainer: {
-      backgroundColor: colors.background,
+      backgroundColor: "#FFFFFF",
       borderRadius: borderRadius.large,
       width: "100%",
       maxWidth: 400,
@@ -89,6 +89,8 @@ export default function AlertModal({ visible, title, message, buttons = [] }) {
     },
   });
 
+  if (!visible) return null;
+
   return (
     <Modal
       visible={visible}
@@ -96,55 +98,64 @@ export default function AlertModal({ visible, title, message, buttons = [] }) {
       animationType="fade"
       onRequestClose={() => {
         // Chercher un bouton cancel et l'exécuter
-        const cancelButton = buttons.find(
-          (btn) => btn.style === "cancel"
-        );
+        const cancelButton = buttons.find((btn) => btn.style === "cancel");
         if (cancelButton && cancelButton.onPress) {
           cancelButton.onPress();
         }
       }}
     >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContainer}>
-          {/* En-tête */}
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>{title}</Text>
-          </View>
+      <Pressable
+        style={styles.modalOverlay}
+        onPress={() => {
+          const cancelButton = buttons.find((btn) => btn.style === "cancel");
+          if (cancelButton && cancelButton.onPress) {
+            cancelButton.onPress();
+          }
+        }}
+      >
+        <Pressable onPress={(e) => e.stopPropagation()}>
+          <View style={styles.modalContainer}>
+            {/* En-tête */}
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{title}</Text>
+            </View>
 
-          {/* Contenu */}
-          <View style={styles.modalContent}>
-            <Text style={styles.message}>{message}</Text>
-          </View>
+            {/* Contenu */}
+            <View style={styles.modalContent}>
+              <Text style={styles.message}>{message}</Text>
+            </View>
 
-          {/* Boutons d'action */}
-          <View style={styles.modalActions}>
-            {buttons.map((button, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  styles.button,
-                  button.style === "destructive" && styles.buttonDestructive,
-                ]}
-                onPress={() => {
-                  if (button.onPress) {
-                    button.onPress();
-                  }
-                }}
-                activeOpacity={0.7}
-              >
-                <Text
+            {/* Boutons d'action */}
+            <View style={styles.modalActions}>
+              {buttons.map((button, index) => (
+                <TouchableOpacity
+                  key={index}
                   style={[
-                    styles.buttonText,
-                    button.style === "destructive" && styles.buttonTextDestructive,
+                    styles.button,
+                    button.style === "destructive" && styles.buttonDestructive,
                   ]}
+                  onPress={() => {
+                    if (button.onPress) {
+                      button.onPress();
+                    }
+                  }}
+                  activeOpacity={0.7}
                 >
-                  {button.text}
-                </Text>
-              </TouchableOpacity>
-            ))}
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      button.style === "destructive" &&
+                        styles.buttonTextDestructive,
+                    ]}
+                  >
+                    {button.text}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
-        </View>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 }

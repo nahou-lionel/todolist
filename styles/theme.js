@@ -1,5 +1,5 @@
-// Couleurs du thème clair
-export const lightColors = {
+// Couleurs de l'application
+export const colors = {
   // Couleurs principales
   primary: "#5886fe",
   background: "#FFFFFF",
@@ -15,31 +15,6 @@ export const lightColors = {
   error: "#ff6b6b",
   success: "#51cf66",
 };
-
-// Couleurs du thème sombre
-export const darkColors = {
-  // Couleurs principales
-  primary: "#5886fe",
-  background: "#000000",
-  text: "#FFFFFF",
-  card: "#1C1C1E",
-
-  // Couleurs secondaires
-  textSecondary: "#8E8E93",
-  placeholder: "#636366",
-  border: "#38383A",
-
-  // Couleurs d'état
-  error: "#ff6b6b",
-  success: "#51cf66",
-};
-
-// Fonction pour obtenir les couleurs selon le thème
-export const getColors = (isDarkMode) =>
-  isDarkMode ? darkColors : lightColors;
-
-// Export par défaut (light mode) pour compatibilité
-export const colors = lightColors;
 
 // Espacements
 export const spacing = {
@@ -68,8 +43,8 @@ export const borderRadius = {
   large: 16,
 };
 
-// Fonction pour obtenir les ombres selon les couleurs
-export const getShadows = (colors) => ({
+// Ombres
+export const shadows = {
   button: {
     shadowColor: colors.primary,
     shadowOffset: {
@@ -80,13 +55,20 @@ export const getShadows = (colors) => ({
     shadowRadius: 8,
     elevation: 4,
   },
-});
+  medium: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+};
 
-// Export par défaut (light mode) pour compatibilité
-export const shadows = getShadows(lightColors);
-
-// Fonction pour obtenir les styles communs selon les couleurs et ombres
-export const getCommonStyles = (colors, shadows) => ({
+// Styles communs
+export const commonStyles = {
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -136,7 +118,4 @@ export const getCommonStyles = (colors, shadows) => ({
     marginBottom: spacing.sm,
     marginLeft: 4,
   },
-});
-
-// Export par défaut (light mode) pour compatibilité
-export const commonStyles = getCommonStyles(lightColors, shadows);
+};

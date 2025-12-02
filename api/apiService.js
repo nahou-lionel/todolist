@@ -53,14 +53,22 @@ const RealAPIService = {
     return data.signUp
   },
 
-  deleteAccount: async (token) => {
+  deleteAccount: async (token, username) => {
     const query = `
-      mutation DeleteAccount {
-        deleteAccount
+      mutation DeleteUsers($where: UserWhere) {
+        deleteUsers(where: $where) {
+          nodesDeleted
+          relationshipsDeleted
+        }
       }
     `
-    const data = await RealAPIService.graphqlRequest(query, {}, token)
-    return data.deleteAccount
+    const variables = {
+      where: {
+        username: username
+      }
+    }
+    const data = await RealAPIService.graphqlRequest(query, variables, token)
+    return data.deleteUsers
   },
 
   // TodoList operations

@@ -11,11 +11,9 @@ import { deleteAccount } from "../api/apiService";
 import { TokenContext, UsernameContext } from "../Context/Context";
 import { useTheme } from "../hooks/useTheme";
 import AlertModal from "../components/UI/AlertModal";
-import ConfirmationModal from "../components/UI/ConfirmationModal";
 
 export default function SettingsScreen({ navigation }) {
-  const { colors, spacing, fontSize, borderRadius, themeMode, setThemeMode } =
-    useTheme();
+  const { colors, spacing, fontSize, borderRadius } = useTheme();
   const [token, setToken] = useContext(TokenContext);
   const [username, setUsername] = useContext(UsernameContext);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -23,7 +21,6 @@ export default function SettingsScreen({ navigation }) {
   // États pour les modals
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false);
-  const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
   const [successModalVisible, setSuccessModalVisible] = useState(false);
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -42,26 +39,13 @@ export default function SettingsScreen({ navigation }) {
     setDeleteAccountModalVisible(true);
   };
 
-  const confirmDeleteAccount = () => {
+  const performDeleteAccount = async () => {
     setDeleteAccountModalVisible(false);
-    setConfirmDeleteModalVisible(true);
-  };
-
-  const performDeleteAccount = async (inputValue) => {
-    if (inputValue !== username) {
-      setConfirmDeleteModalVisible(false);
-      setErrorMessage("Le nom d'utilisateur ne correspond pas.");
-      setErrorModalVisible(true);
-      return;
-    }
-
     setIsDeleting(true);
     try {
-      await deleteAccount(token);
-      setConfirmDeleteModalVisible(false);
+      await deleteAccount(token, username);
       setSuccessModalVisible(true);
     } catch (error) {
-      setConfirmDeleteModalVisible(false);
       setErrorMessage(error.message || "Impossible de supprimer le compte");
       setErrorModalVisible(true);
     } finally {
@@ -148,33 +132,6 @@ export default function SettingsScreen({ navigation }) {
     buttonTextDanger: {
       color: colors.error,
     },
-    themeButton: {
-      flexDirection: "row",
-      alignItems: "center",
-      backgroundColor: colors.card,
-      borderRadius: borderRadius.medium,
-      padding: spacing.lg,
-      borderWidth: 1,
-      borderColor: colors.border,
-      marginBottom: spacing.md,
-    },
-    themeButtonActive: {
-      borderColor: colors.primary,
-      backgroundColor: colors.card,
-    },
-    themeButtonText: {
-      flex: 1,
-      fontSize: fontSize.medium,
-      color: colors.text,
-      fontWeight: "500",
-      marginLeft: spacing.md,
-    },
-    themeButtonTextActive: {
-      color: colors.primary,
-    },
-    checkIcon: {
-      marginLeft: spacing.sm,
-    },
   });
 
   return (
@@ -191,73 +148,6 @@ export default function SettingsScreen({ navigation }) {
               <Text style={styles.rowValue}>{username}</Text>
             </View>
           </View>
-        </View>
-
-        {/* Section Apparence */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Apparence</Text>
-
-          <TouchableOpacity
-            style={[
-              styles.themeButton,
-              themeMode === "light" && styles.themeButtonActive,
-            ]}
-            onPress={() => setThemeMode("light")}
-            activeOpacity={0.7}
-          >
-            <MaterialIcons
-              name="light-mode"
-              size={24}
-              color={themeMode === "light" ? colors.primary : colors.text}
-            />
-            <Text
-              style={[
-                styles.themeButtonText,
-                themeMode === "light" && styles.themeButtonTextActive,
-              ]}
-            >
-              Mode Clair
-            </Text>
-            {themeMode === "light" && (
-              <MaterialIcons
-                name="check"
-                size={20}
-                color={colors.primary}
-                style={styles.checkIcon}
-              />
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.themeButton,
-              themeMode === "dark" && styles.themeButtonActive,
-            ]}
-            onPress={() => setThemeMode("dark")}
-            activeOpacity={0.7}
-          >
-            <MaterialIcons
-              name="dark-mode"
-              size={24}
-              color={themeMode === "dark" ? colors.primary : colors.text}
-            />
-            <Text
-              style={[
-                styles.themeButtonText,
-                themeMode === "dark" && styles.themeButtonTextActive,
-              ]}
-            >
-              Mode Sombre
-            </Text>
-            {themeMode === "dark" && (
-              <MaterialIcons
-                name="check"
-                size={20}
-                color={colors.primary}
-                style={styles.checkIcon}
-              />
-            )}
-          </TouchableOpacity>
         </View>
 
         {/* Section Actions */}
@@ -324,22 +214,9 @@ export default function SettingsScreen({ navigation }) {
           {
             text: "Supprimer",
             style: "destructive",
-            onPress: confirmDeleteAccount,
+            onPress: performDeleteAccount,
           },
         ]}
-      />
-
-      {/* Modal de confirmation avec saisie */}
-      <ConfirmationModal
-        visible={confirmDeleteModalVisible}
-        onClose={() => setConfirmDeleteModalVisible(false)}
-        onConfirm={performDeleteAccount}
-        title="Confirmation"
-        message={`Tapez votre nom d'utilisateur "${username}" pour confirmer la suppression :`}
-        placeholder={username}
-        expectedValue={username}
-        confirmText="Supprimer définitivement"
-        loading={isDeleting}
       />
 
       {/* Modal de succès */}

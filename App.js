@@ -1,17 +1,14 @@
 import {React, useState} from 'react';
 import { StatusBar } from 'react-native';
 import Navigation from './Navigation/Navigation';
-import { TokenContext, UsernameContext, ThemeContext } from './Context/Context';
+import { TokenContext, UsernameContext } from './Context/Context';
 import { AlertProvider } from './Context/AlertContext';
-import { useTheme } from './hooks/useTheme';
 
 function AppContent() {
-  const { isDarkMode } = useTheme();
-
   return (
     <>
       <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        barStyle='dark-content'
         backgroundColor="transparent"
         translucent={false}
       />
@@ -23,19 +20,15 @@ function AppContent() {
 export default function App () {
   const [token, setToken] = useState(null)
   const [username, setUsername] = useState(null)
-  // 'auto' | 'light' | 'dark'
-  const [themeMode, setThemeMode] = useState('light')
 
   console.log('token', token)
   return (
-    <ThemeContext.Provider value={[themeMode, setThemeMode]}>
-      <UsernameContext.Provider value={[username, setUsername]}>
-        <TokenContext.Provider value={[token, setToken]}>
-          <AlertProvider>
-            <AppContent />
-          </AlertProvider>
-        </TokenContext.Provider>
-      </UsernameContext.Provider>
-    </ThemeContext.Provider>
+    <UsernameContext.Provider value={[username, setUsername]}>
+      <TokenContext.Provider value={[token, setToken]}>
+        <AlertProvider>
+          <AppContent />
+        </AlertProvider>
+      </TokenContext.Provider>
+    </UsernameContext.Provider>
   )
 }

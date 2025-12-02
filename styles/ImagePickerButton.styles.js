@@ -35,32 +35,4 @@ export const createStyles = (colors, shadows) => ({
     fontSize: 18,
     fontWeight: "600",
   },
-
-  // Bouton pour ajouter une image (version compacte)
-  addButtonCompact: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.card,
-  },
-
-  addButtonDisabled: {
-    opacity: 0.5,
-  },
-
-  addButtonIcon: {
-    fontSize: 20,
-    marginRight: 8,
-  },
-
-  addButtonTextCompact: {
-    fontSize: 14,
-    color: colors.text,
-    fontWeight: "500",
-  },
 });
