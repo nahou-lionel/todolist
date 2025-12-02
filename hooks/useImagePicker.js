@@ -1,6 +1,7 @@
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
-import { Alert, Platform } from "react-native";
+import { Platform } from "react-native";
+import { useAlert } from "../Context/AlertContext";
 
 /**
  * Hook personnalisé pour gérer la sélection d'images depuis la galerie
@@ -9,6 +10,7 @@ import { Alert, Platform } from "react-native";
 export const useImagePicker = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { showAlert } = useAlert();
 
   /**
    * Demande la permission d'accéder à la galerie
@@ -20,7 +22,7 @@ export const useImagePicker = () => {
         await ImagePicker.requestMediaLibraryPermissionsAsync();
 
       if (status !== "granted") {
-        Alert.alert(
+        showAlert(
           "Permission requise",
           "L'accès à la galerie est nécessaire pour ajouter des images."
         );
@@ -61,7 +63,7 @@ export const useImagePicker = () => {
       return null;
     } catch (error) {
       console.error("Erreur lors de la sélection de l'image:", error);
-      Alert.alert(
+      showAlert(
         "Erreur",
         "Une erreur est survenue lors de la sélection de l'image"
       );

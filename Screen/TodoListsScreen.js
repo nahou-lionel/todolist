@@ -4,7 +4,7 @@ import React, {
   useContext,
   useState,
 } from "react";
-import { ActivityIndicator, Alert, FlatList, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import { TokenContext, UsernameContext } from "../Context/Context";
 import {
   createTodoList,
@@ -15,6 +15,7 @@ import {
 import { getTodos } from "../components/Todos";
 import Input from "../components/UI/Input";
 import TodoLists from "../components/UI/TodoLists";
+import AlertModal from "../components/UI/AlertModal";
 import { useTheme } from "../hooks/useTheme";
 import { createStyles } from "../styles/TodoListsScreen.styles";
 
@@ -27,6 +28,12 @@ export default function TodoListsScreen({ navigation }) {
   const [newListTitle, setNewListTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+
+  // États pour les modals
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+  const [listToDelete, setListToDelete] = useState(null);
 
   const loadTodoLists = useCallback(async () => {
     setLoading(true);
@@ -62,10 +69,8 @@ export default function TodoListsScreen({ navigation }) {
       setTodoLists(listsWithStats);
       setLoading(false);
     } catch (error) {
-      Alert.alert(
-        "Erreur",
-        error.message || "Impossible de charger les listes"
-      );
+      setErrorMessage(error.message || "Impossible de charger les listes");
+      setErrorModalVisible(true);
       setLoading(false);
     }
   }, [token, username]);
@@ -78,7 +83,8 @@ export default function TodoListsScreen({ navigation }) {
 
   const newTodoList = () => {
     if (!newListTitle.trim()) {
-      Alert.alert("Erreur", "Veuillez entrer un titre");
+      setErrorMessage("Veuillez entrer un titre");
+      setErrorModalVisible(true);
       return;
     }
     setCreating(true);
@@ -88,7 +94,8 @@ export default function TodoListsScreen({ navigation }) {
         setNewListTitle("");
       })
       .catch((error) => {
-        Alert.alert("Erreur", error.message || "Impossible de créer la liste");
+        setErrorMessage(error.message || "Impossible de créer la liste");
+        setErrorModalVisible(true);
       })
       .finally(() => {
         setCreating(false);
@@ -97,33 +104,24 @@ export default function TodoListsScreen({ navigation }) {
 
   const handleDeleteList = useCallback(
     async (listId) => {
-      Alert.alert(
-        "Confirmation",
-        "Voulez-vous vraiment supprimer cette liste ?",
-        [
-          { text: "Annuler", style: "cancel" },
-          {
-            text: "Supprimer",
-            style: "destructive",
-            onPress: async () => {
-              try {
-                await deleteTodoList(token, listId);
-                setTodoLists((prevLists) =>
-                  prevLists.filter((list) => list.id !== listId)
-                );
-              } catch (error) {
-                Alert.alert(
-                  "Erreur",
-                  error.message || "Impossible de supprimer la liste"
-                );
-              }
-            },
-          },
-        ]
-      );
+      setListToDelete(listId);
+      setDeleteConfirmVisible(true);
     },
-    [token]
+    []
   );
+
+  const confirmDeleteList = async () => {
+    setDeleteConfirmVisible(false);
+    try {
+      await deleteTodoList(token, listToDelete);
+      setTodoLists((prevLists) =>
+        prevLists.filter((list) => list.id !== listToDelete)
+      );
+    } catch (error) {
+      setErrorMessage(error.message || "Impossible de supprimer la liste");
+      setErrorModalVisible(true);
+    }
+  };
 
   const handleEditList = useCallback(
     async (listId, newTitle) => {
@@ -135,10 +133,8 @@ export default function TodoListsScreen({ navigation }) {
           )
         );
       } catch (error) {
-        Alert.alert(
-          "Erreur",
-          error.message || "Impossible de modifier la liste"
-        );
+        setErrorMessage(error.message || "Impossible de modifier la liste");
+        setErrorModalVisible(true);
       }
     },
     [token]
@@ -180,6 +176,38 @@ export default function TodoListsScreen({ navigation }) {
           style={styles.createSection}
         />
       </View>
+
+      {/* Modal d'erreur */}
+      <AlertModal
+        visible={errorModalVisible}
+        title="Erreur"
+        message={errorMessage}
+        buttons={[
+          {
+            text: "OK",
+            onPress: () => setErrorModalVisible(false),
+          },
+        ]}
+      />
+
+      {/* Modal de confirmation de suppression */}
+      <AlertModal
+        visible={deleteConfirmVisible}
+        title="Confirmation"
+        message="Voulez-vous vraiment supprimer cette liste ?"
+        buttons={[
+          {
+            text: "Annuler",
+            style: "cancel",
+            onPress: () => setDeleteConfirmVisible(false),
+          },
+          {
+            text: "Supprimer",
+            style: "destructive",
+            onPress: confirmDeleteList,
+          },
+        ]}
+      />
     </View>
   );
 }

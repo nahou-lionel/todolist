@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { ActivityIndicator, Alert, FlatList, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import { TokenContext } from "../Context/Context";
 import { useTheme } from "../hooks/useTheme";
 import { useImagePicker } from "../hooks/useImagePicker";
@@ -9,6 +9,7 @@ import { deleteImageLocally, saveImageLocally } from "../services/imageStorageSe
 import { createStyles } from "../styles/TodoListDetailsScreen.styles";
 import { createTodo, deleteTodo, getTodos, updateTodo } from "./Todos";
 import AddTodoModal from "./UI/AddTodoModal";
+import AlertModal from "./UI/AlertModal";
 import ExportButton from "./UI/ExportButton";
 import FloatingActionButton from "./UI/FloatingActionButton";
 import TodoItem from "./UI/TodoItem";
@@ -26,6 +27,14 @@ export default function TodoListDetails({ navigation, route }) {
 
   // State local pour stocker les associations todo <-> image
   const [todoImages, setTodoImages] = useState({});
+
+  // États pour les modals
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [warningModalVisible, setWarningModalVisible] = useState(false);
+  const [warningMessage, setWarningMessage] = useState("");
+  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+  const [todoToDelete, setTodoToDelete] = useState(null);
 
   // Charger les associations todo-image depuis AsyncStorage
   useEffect(() => {
@@ -64,10 +73,8 @@ export default function TodoListDetails({ navigation, route }) {
         setTodos(fetchedTodos);
       })
       .catch((error) => {
-        Alert.alert(
-          "Erreur",
-          error.message || "Impossible de charger les todos"
-        );
+        setErrorMessage(error.message || "Impossible de charger les todos");
+        setErrorModalVisible(true);
       })
       .finally(() => {
         setLoading(false);
@@ -80,7 +87,8 @@ export default function TodoListDetails({ navigation, route }) {
 
   const handleCreateTodo = async (todoContent, imageUri) => {
     if (!todoContent.trim()) {
-      Alert.alert("Erreur", "Veuillez entrer un contenu");
+      setErrorMessage("Veuillez entrer un contenu");
+      setErrorModalVisible(true);
       return;
     }
 
@@ -101,14 +109,16 @@ export default function TodoListDetails({ navigation, route }) {
           }));
         } catch (imageError) {
           console.error("Erreur lors de la sauvegarde de l'image:", imageError);
-          Alert.alert("Attention", "Le todo a été créé mais l'image n'a pas pu être sauvegardée");
+          setWarningMessage("Le todo a été créé mais l'image n'a pas pu être sauvegardée");
+          setWarningModalVisible(true);
         }
       }
 
       setTodos([...todos, newTodo]);
       setModalVisible(false);
     } catch (error) {
-      Alert.alert("Erreur", error.message || "Impossible de créer le todo");
+      setErrorMessage(error.message || "Impossible de créer le todo");
+      setErrorModalVisible(true);
     } finally {
       setCreating(false);
     }
@@ -125,7 +135,8 @@ export default function TodoListDetails({ navigation, route }) {
         )
       );
     } catch (error) {
-      Alert.alert("Erreur", error.message || "Impossible de modifier le todo");
+      setErrorMessage(error.message || "Impossible de modifier le todo");
+      setErrorModalVisible(true);
     }
   }, [token]);
 
@@ -140,43 +151,39 @@ export default function TodoListDetails({ navigation, route }) {
         )
       );
     } catch (error) {
-      Alert.alert("Erreur", error.message || "Impossible de modifier le todo");
+      setErrorMessage(error.message || "Impossible de modifier le todo");
+      setErrorModalVisible(true);
     }
   }, [token]);
 
   const handleDeleteTodo = useCallback(async (todoId) => {
-    Alert.alert("Confirmation", "Voulez-vous vraiment supprimer ce todo ?", [
-      { text: "Annuler", style: "cancel" },
-      {
-        text: "Supprimer",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            // Supprimer l'image associée si elle existe
-            setTodoImages(prev => {
-              if (prev[todoId]) {
-                deleteImageLocally(prev[todoId]).catch(err =>
-                  console.error("Erreur suppression image:", err)
-                );
-                const newImages = { ...prev };
-                delete newImages[todoId];
-                return newImages;
-              }
-              return prev;
-            });
+    setTodoToDelete(todoId);
+    setDeleteConfirmVisible(true);
+  }, []);
 
-            await deleteTodo(token, todoId);
-            setTodos(prevTodos => prevTodos.filter((todo) => todo.id !== todoId));
-          } catch (error) {
-            Alert.alert(
-              "Erreur",
-              error.message || "Impossible de supprimer le todo"
-            );
-          }
-        },
-      },
-    ]);
-  }, [token]);
+  const confirmDeleteTodo = async () => {
+    setDeleteConfirmVisible(false);
+    try {
+      // Supprimer l'image associée si elle existe
+      setTodoImages(prev => {
+        if (prev[todoToDelete]) {
+          deleteImageLocally(prev[todoToDelete]).catch(err =>
+            console.error("Erreur suppression image:", err)
+          );
+          const newImages = { ...prev };
+          delete newImages[todoToDelete];
+          return newImages;
+        }
+        return prev;
+      });
+
+      await deleteTodo(token, todoToDelete);
+      setTodos(prevTodos => prevTodos.filter((todo) => todo.id !== todoToDelete));
+    } catch (error) {
+      setErrorMessage(error.message || "Impossible de supprimer le todo");
+      setErrorModalVisible(true);
+    }
+  };
 
   if (loading) {
     return (
@@ -241,6 +248,51 @@ export default function TodoListDetails({ navigation, route }) {
         onClose={() => setModalVisible(false)}
         onSubmit={handleCreateTodo}
         loading={creating}
+      />
+
+      {/* Modal d'erreur */}
+      <AlertModal
+        visible={errorModalVisible}
+        title="Erreur"
+        message={errorMessage}
+        buttons={[
+          {
+            text: "OK",
+            onPress: () => setErrorModalVisible(false),
+          },
+        ]}
+      />
+
+      {/* Modal d'avertissement */}
+      <AlertModal
+        visible={warningModalVisible}
+        title="Attention"
+        message={warningMessage}
+        buttons={[
+          {
+            text: "OK",
+            onPress: () => setWarningModalVisible(false),
+          },
+        ]}
+      />
+
+      {/* Modal de confirmation de suppression */}
+      <AlertModal
+        visible={deleteConfirmVisible}
+        title="Confirmation"
+        message="Voulez-vous vraiment supprimer ce todo ?"
+        buttons={[
+          {
+            text: "Annuler",
+            style: "cancel",
+            onPress: () => setDeleteConfirmVisible(false),
+          },
+          {
+            text: "Supprimer",
+            style: "destructive",
+            onPress: confirmDeleteTodo,
+          },
+        ]}
       />
     </View>
   );

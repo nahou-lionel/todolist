@@ -1,7 +1,6 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { useContext, useState } from "react";
 import {
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,6 +10,8 @@ import {
 import { deleteAccount } from "../api/apiService";
 import { TokenContext, UsernameContext } from "../Context/Context";
 import { useTheme } from "../hooks/useTheme";
+import AlertModal from "../components/UI/AlertModal";
+import ConfirmationModal from "../components/UI/ConfirmationModal";
 
 export default function SettingsScreen({ navigation }) {
   const { colors, spacing, fontSize, borderRadius, themeMode, setThemeMode } =
@@ -19,82 +20,59 @@ export default function SettingsScreen({ navigation }) {
   const [username, setUsername] = useContext(UsernameContext);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // États pour les modals
+  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+  const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false);
+  const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
+  const [successModalVisible, setSuccessModalVisible] = useState(false);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleLogout = () => {
-    Alert.alert("Déconnexion", "Êtes-vous sûr de vouloir vous déconnecter ?", [
-      { text: "Annuler", style: "cancel" },
-      {
-        text: "Déconnexion",
-        style: "destructive",
-        onPress: () => {
-          setToken(null);
-          setUsername(null);
-        },
-      },
-    ]);
+    setLogoutModalVisible(true);
+  };
+
+  const confirmLogout = () => {
+    setLogoutModalVisible(false);
+    setToken(null);
+    setUsername(null);
   };
 
   const handleDeleteAccount = () => {
-    Alert.alert(
-      "Supprimer le compte",
-      `Êtes-vous sûr de vouloir supprimer votre compte "${username}" ? Cette action est irréversible et supprimera toutes vos listes et tâches.`,
-      [
-        { text: "Annuler", style: "cancel" },
-        {
-          text: "Supprimer",
-          style: "destructive",
-          onPress: () => confirmDeleteAccount(),
-        },
-      ]
-    );
+    setDeleteAccountModalVisible(true);
   };
 
   const confirmDeleteAccount = () => {
-    Alert.prompt(
-      "Confirmation",
-      `Tapez votre nom d'utilisateur "${username}" pour confirmer la suppression :`,
-      [
-        { text: "Annuler", style: "cancel" },
-        {
-          text: "Supprimer définitivement",
-          style: "destructive",
-          onPress: (inputValue) => {
-            if (inputValue === username) {
-              performDeleteAccount();
-            } else {
-              Alert.alert("Erreur", "Le nom d'utilisateur ne correspond pas.");
-            }
-          },
-        },
-      ],
-      "plain-text"
-    );
+    setDeleteAccountModalVisible(false);
+    setConfirmDeleteModalVisible(true);
   };
 
-  const performDeleteAccount = async () => {
+  const performDeleteAccount = async (inputValue) => {
+    if (inputValue !== username) {
+      setConfirmDeleteModalVisible(false);
+      setErrorMessage("Le nom d'utilisateur ne correspond pas.");
+      setErrorModalVisible(true);
+      return;
+    }
+
     setIsDeleting(true);
     try {
       await deleteAccount(token);
-      Alert.alert(
-        "Compte supprimé",
-        "Votre compte a été supprimé avec succès.",
-        [
-          {
-            text: "OK",
-            onPress: () => {
-              setToken(null);
-              setUsername(null);
-            },
-          },
-        ]
-      );
+      setConfirmDeleteModalVisible(false);
+      setSuccessModalVisible(true);
     } catch (error) {
-      Alert.alert(
-        "Erreur",
-        error.message || "Impossible de supprimer le compte"
-      );
+      setConfirmDeleteModalVisible(false);
+      setErrorMessage(error.message || "Impossible de supprimer le compte");
+      setErrorModalVisible(true);
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const handleSuccessClose = () => {
+    setSuccessModalVisible(false);
+    setToken(null);
+    setUsername(null);
   };
 
   const styles = StyleSheet.create({
@@ -312,6 +290,83 @@ export default function SettingsScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Modal de déconnexion */}
+      <AlertModal
+        visible={logoutModalVisible}
+        title="Déconnexion"
+        message="Êtes-vous sûr de vouloir vous déconnecter ?"
+        buttons={[
+          {
+            text: "Annuler",
+            style: "cancel",
+            onPress: () => setLogoutModalVisible(false),
+          },
+          {
+            text: "Déconnexion",
+            style: "destructive",
+            onPress: confirmLogout,
+          },
+        ]}
+      />
+
+      {/* Modal de suppression de compte */}
+      <AlertModal
+        visible={deleteAccountModalVisible}
+        title="Supprimer le compte"
+        message={`Êtes-vous sûr de vouloir supprimer votre compte "${username}" ? Cette action est irréversible et supprimera toutes vos listes et tâches.`}
+        buttons={[
+          {
+            text: "Annuler",
+            style: "cancel",
+            onPress: () => setDeleteAccountModalVisible(false),
+          },
+          {
+            text: "Supprimer",
+            style: "destructive",
+            onPress: confirmDeleteAccount,
+          },
+        ]}
+      />
+
+      {/* Modal de confirmation avec saisie */}
+      <ConfirmationModal
+        visible={confirmDeleteModalVisible}
+        onClose={() => setConfirmDeleteModalVisible(false)}
+        onConfirm={performDeleteAccount}
+        title="Confirmation"
+        message={`Tapez votre nom d'utilisateur "${username}" pour confirmer la suppression :`}
+        placeholder={username}
+        expectedValue={username}
+        confirmText="Supprimer définitivement"
+        loading={isDeleting}
+      />
+
+      {/* Modal de succès */}
+      <AlertModal
+        visible={successModalVisible}
+        title="Compte supprimé"
+        message="Votre compte a été supprimé avec succès."
+        buttons={[
+          {
+            text: "OK",
+            onPress: handleSuccessClose,
+          },
+        ]}
+      />
+
+      {/* Modal d'erreur */}
+      <AlertModal
+        visible={errorModalVisible}
+        title="Erreur"
+        message={errorMessage}
+        buttons={[
+          {
+            text: "OK",
+            onPress: () => setErrorModalVisible(false),
+          },
+        ]}
+      />
     </ScrollView>
   );
 }

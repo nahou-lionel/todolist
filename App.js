@@ -2,6 +2,7 @@ import {React, useState} from 'react';
 import { StatusBar } from 'react-native';
 import Navigation from './Navigation/Navigation';
 import { TokenContext, UsernameContext, ThemeContext } from './Context/Context';
+import { AlertProvider } from './Context/AlertContext';
 import { useTheme } from './hooks/useTheme';
 
 function AppContent() {
@@ -30,7 +31,9 @@ export default function App () {
     <ThemeContext.Provider value={[themeMode, setThemeMode]}>
       <UsernameContext.Provider value={[username, setUsername]}>
         <TokenContext.Provider value={[token, setToken]}>
-          <AppContent />
+          <AlertProvider>
+            <AppContent />
+          </AlertProvider>
         </TokenContext.Provider>
       </UsernameContext.Provider>
     </ThemeContext.Provider>

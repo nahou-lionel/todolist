@@ -2,7 +2,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Modal,
   Pressable,
   Text,
@@ -11,6 +10,7 @@ import {
 } from "react-native";
 import { useTheme } from "../../hooks/useTheme";
 import { createStyles } from "../../styles/ExportButton.styles";
+import AlertModal from "./AlertModal";
 
 // Formats d'export disponibles
 const EXPORT_FORMATS = [
@@ -39,6 +39,11 @@ export default function ExportButton({ listTitle, todos, onExport }) {
   const [selectedFormat, setSelectedFormat] = useState(null);
   const [exporting, setExporting] = useState(false);
 
+  // États pour les modals d'alerte
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successModalVisible, setSuccessModalVisible] = useState(false);
+
   const handleOpenModal = () => {
     setModalVisible(true);
     setSelectedFormat(null);
@@ -51,7 +56,8 @@ export default function ExportButton({ listTitle, todos, onExport }) {
 
   const handleExport = async () => {
     if (!selectedFormat) {
-      Alert.alert("Erreur", "Veuillez sélectionner un format");
+      setErrorMessage("Veuillez sélectionner un format");
+      setErrorModalVisible(true);
       return;
     }
 
@@ -67,12 +73,10 @@ export default function ExportButton({ listTitle, todos, onExport }) {
       setSelectedFormat(null);
 
       // Message de succès
-      Alert.alert("Succès", "La liste a été exportée avec succès");
+      setSuccessModalVisible(true);
     } catch (error) {
-      Alert.alert(
-        "Erreur",
-        error.message || "Une erreur est survenue lors de l'export"
-      );
+      setErrorMessage(error.message || "Une erreur est survenue lors de l'export");
+      setErrorModalVisible(true);
     } finally {
       setExporting(false);
     }
@@ -172,6 +176,32 @@ export default function ExportButton({ listTitle, todos, onExport }) {
           </View>
         </View>
       </Modal>
+
+      {/* Modal d'erreur */}
+      <AlertModal
+        visible={errorModalVisible}
+        title="Erreur"
+        message={errorMessage}
+        buttons={[
+          {
+            text: "OK",
+            onPress: () => setErrorModalVisible(false),
+          },
+        ]}
+      />
+
+      {/* Modal de succès */}
+      <AlertModal
+        visible={successModalVisible}
+        title="Succès"
+        message="La liste a été exportée avec succès"
+        buttons={[
+          {
+            text: "OK",
+            onPress: () => setSuccessModalVisible(false),
+          },
+        ]}
+      />
     </>
   );
 }
