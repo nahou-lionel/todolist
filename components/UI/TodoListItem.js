@@ -41,7 +41,10 @@ export default function TodoListItem({
     setIsEditing(true);
   };
 
-  const handleSave = () => {
+  const handleSave = (e) => {
+    if (e) {
+      e.stopPropagation();
+    }
     if (editedTitle.trim() && editedTitle !== item.title) {
       onEdit?.(item.id, editedTitle.trim());
     } else {
@@ -50,7 +53,10 @@ export default function TodoListItem({
     setIsEditing(false);
   };
 
-  const handleCancel = () => {
+  const handleCancel = (e) => {
+    if (e) {
+      e.stopPropagation();
+    }
     setEditedTitle(item.title);
     setIsEditing(false);
   };
