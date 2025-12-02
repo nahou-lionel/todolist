@@ -1,35 +1,32 @@
-// Unified API service that switches between mock and real API
-import { API_CONFIG } from './config'
-import { MockAPIService } from './mockService'
+import { API_CONFIG } from "./config";
 
-// Real API implementation using GraphQL
 const RealAPIService = {
-  // Helper to make GraphQL requests
+  // Helper GraphQL
   graphqlRequest: async (query, variables = {}, token = null) => {
     const headers = {
-      'Content-Type': 'application/json'
-    }
+      "Content-Type": "application/json",
+    };
 
     if (token) {
-      headers['authorization'] = 'Bearer ' + token
+      headers["authorization"] = "Bearer " + token;
     }
 
     const response = await fetch(API_CONFIG.REAL_API_URL, {
-      method: 'POST',
+      method: "POST",
       headers,
       body: JSON.stringify({
         query,
-        variables
-      })
-    })
+        variables,
+      }),
+    });
 
-    const jsonResponse = await response.json()
+    const jsonResponse = await response.json();
 
     if (jsonResponse.errors != null) {
-      throw jsonResponse.errors[0]
+      throw jsonResponse.errors[0];
     }
 
-    return jsonResponse.data
+    return jsonResponse.data;
   },
 
   // Authentication
@@ -38,9 +35,12 @@ const RealAPIService = {
       mutation SignIn($username: String!, $password: String!) {
         signIn(username: $username, password: $password)
       }
-    `
-    const data = await RealAPIService.graphqlRequest(query, { username, password })
-    return data.signIn
+    `;
+    const data = await RealAPIService.graphqlRequest(query, {
+      username,
+      password,
+    });
+    return data.signIn;
   },
 
   signUp: async (username, password) => {
@@ -48,9 +48,12 @@ const RealAPIService = {
       mutation SignUp($username: String!, $password: String!) {
         signUp(username: $username, password: $password)
       }
-    `
-    const data = await RealAPIService.graphqlRequest(query, { username, password })
-    return data.signUp
+    `;
+    const data = await RealAPIService.graphqlRequest(query, {
+      username,
+      password,
+    });
+    return data.signUp;
   },
 
   deleteAccount: async (token, username) => {
@@ -61,14 +64,14 @@ const RealAPIService = {
           relationshipsDeleted
         }
       }
-    `
+    `;
     const variables = {
       where: {
-        username: username
-      }
-    }
-    const data = await RealAPIService.graphqlRequest(query, variables, token)
-    return data.deleteUsers
+        username: username,
+      },
+    };
+    const data = await RealAPIService.graphqlRequest(query, variables, token);
+    return data.deleteUsers;
   },
 
   // TodoList operations
@@ -80,16 +83,16 @@ const RealAPIService = {
           title
         }
       }
-    `
+    `;
     const variables = {
       where: {
         owner: {
-          username: username
-        }
-      }
-    }
-    const data = await RealAPIService.graphqlRequest(query, variables, token)
-    return data.todoLists
+          username: username,
+        },
+      },
+    };
+    const data = await RealAPIService.graphqlRequest(query, variables, token);
+    return data.todoLists;
   },
 
   createTodoList: async (token, username, title) => {
@@ -105,30 +108,30 @@ const RealAPIService = {
           }
         }
       }
-    `
+    `;
     const variables = {
       input: [
         {
           owner: {
             connect: {
               where: {
-                username: username
-              }
-            }
+                username: username,
+              },
+            },
           },
-          title: title
-        }
-      ]
-    }
-    const data = await RealAPIService.graphqlRequest(query, variables, token)
-    const newList = data.createTodoLists.todoLists[0]
+          title: title,
+        },
+      ],
+    };
+    const data = await RealAPIService.graphqlRequest(query, variables, token);
+    const newList = data.createTodoLists.todoLists[0];
     // Ajouter les stats pour une nouvelle liste vide
     return {
       ...newList,
       totalTodos: 0,
       completedTodos: 0,
-      completionPercentage: 0
-    }
+      completionPercentage: 0,
+    };
   },
 
   updateTodoList: async (token, todoListId, title) => {
@@ -146,9 +149,13 @@ const RealAPIService = {
           }
         }
       }
-    `
-    const data = await RealAPIService.graphqlRequest(query, { id: todoListId, title }, token)
-    return data.updateTodoLists
+    `;
+    const data = await RealAPIService.graphqlRequest(
+      query,
+      { id: todoListId, title },
+      token
+    );
+    return data.updateTodoLists;
   },
 
   deleteTodoList: async (token, todoListId) => {
@@ -158,14 +165,14 @@ const RealAPIService = {
           nodesDeleted
         }
       }
-    `
+    `;
     const variables = {
       where: {
-        id: todoListId
-      }
-    }
-    const data = await RealAPIService.graphqlRequest(query, variables, token)
-    return data.deleteTodoLists.nodesDeleted
+        id: todoListId,
+      },
+    };
+    const data = await RealAPIService.graphqlRequest(query, variables, token);
+    return data.deleteTodoLists.nodesDeleted;
   },
 
   // Todo operations
@@ -178,16 +185,16 @@ const RealAPIService = {
           done
         }
       }
-    `
+    `;
     const variables = {
       where: {
         belongsTo: {
-          id: todoListId
-        }
-      }
-    }
-    const data = await RealAPIService.graphqlRequest(query, variables, token)
-    return data.todos
+          id: todoListId,
+        },
+      },
+    };
+    const data = await RealAPIService.graphqlRequest(query, variables, token);
+    return data.todos;
   },
 
   createTodo: async (token, todoListId, content, done = false) => {
@@ -201,23 +208,23 @@ const RealAPIService = {
           }
         }
       }
-    `
+    `;
     const variables = {
       input: [
         {
           belongsTo: {
             connect: {
               where: {
-                id: todoListId
-              }
-            }
+                id: todoListId,
+              },
+            },
           },
-          content: content
-        }
-      ]
-    }
-    const data = await RealAPIService.graphqlRequest(query, variables, token)
-    return data.createTodos.todos[0]
+          content: content,
+        },
+      ],
+    };
+    const data = await RealAPIService.graphqlRequest(query, variables, token);
+    return data.createTodos.todos[0];
   },
 
   updateTodo: async (token, todoId, updates) => {
@@ -231,15 +238,15 @@ const RealAPIService = {
           }
         }
       }
-    `
+    `;
     const variables = {
       where: {
-        id: todoId
+        id: todoId,
       },
-      update: updates
-    }
-    const data = await RealAPIService.graphqlRequest(query, variables, token)
-    return data.updateTodos.todos[0]
+      update: updates,
+    };
+    const data = await RealAPIService.graphqlRequest(query, variables, token);
+    return data.updateTodos.todos[0];
   },
 
   deleteTodo: async (token, todoId) => {
@@ -249,17 +256,17 @@ const RealAPIService = {
           nodesDeleted
         }
       }
-    `
+    `;
     const variables = {
-      id: todoId
-    }
-    const data = await RealAPIService.graphqlRequest(query, variables, token)
-    return data.deleteTodos.nodesDeleted
-  }
-}
+      id: todoId,
+    };
+    const data = await RealAPIService.graphqlRequest(query, variables, token);
+    return data.deleteTodos.nodesDeleted;
+  },
+};
 
 // Export the appropriate service based on configuration
-export const API = API_CONFIG.USE_MOCK_API ? MockAPIService : RealAPIService
+export const API = RealAPIService;
 
 // Export individual functions for convenience
 export const {
@@ -273,5 +280,5 @@ export const {
   getTodos,
   createTodo,
   updateTodo,
-  deleteTodo
-} = API
+  deleteTodo,
+} = API;
