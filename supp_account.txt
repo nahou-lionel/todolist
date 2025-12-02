@@ -1,0 +1,17 @@
+mutation DeleteUsers($where: UserWhere) {
+  deleteUsers(where: $where) {
+    nodesDeleted
+    relationshipsDeleted
+  }
+}
+
+
+VARIABLES 
+
+
+
+{
+  "where": {
+    "username": ""
+  }
+}
