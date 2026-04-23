@@ -1,4 +1,5 @@
 import { API_CONFIG } from "./config";
+import { MockAPIService } from "./mockService";
 
 const RealAPIService = {
   // Helper GraphQL
@@ -266,7 +267,7 @@ const RealAPIService = {
 };
 
 // Export the appropriate service based on configuration
-export const API = RealAPIService;
+export const API = API_CONFIG.USE_MOCK_API ? MockAPIService : RealAPIService;
 
 // Export individual functions for convenience
 export const {
