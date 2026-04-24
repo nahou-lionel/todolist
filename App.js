@@ -1,8 +1,9 @@
-import {React, useState} from 'react';
+import { React, useState, useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import Navigation from './Navigation/Navigation';
 import { TokenContext, UsernameContext } from './Context/Context';
 import { AlertProvider } from './Context/AlertContext';
+import { signIn } from './api/apiService';
 
 function AppContent() {
   return (
@@ -21,7 +22,15 @@ export default function App () {
   const [token, setToken] = useState(null)
   const [username, setUsername] = useState(null)
 
-  console.log('token', token)
+  useEffect(() => {
+    signIn('demo', 'demo123')
+      .then((t) => {
+        setToken(t)
+        setUsername('demo')
+      })
+      .catch(() => {})
+  }, [])
+
   return (
     <UsernameContext.Provider value={[username, setUsername]}>
       <TokenContext.Provider value={[token, setToken]}>
