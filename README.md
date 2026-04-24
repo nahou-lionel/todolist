@@ -33,7 +33,7 @@ npm run web      # Navigateur
 Par défaut, l'application utilise des données de mock. Pour pointer sur l'API réelle (réseau universitaire), modifier `api/config.js` :
 
 ```js
-USE_MOCK_API: false  // Désactive le mock
+USE_MOCK_API: false; // Désactive le mock
 ```
 
 L'URL de l'API est `http://graphql.unicaen.fr:4000`.
@@ -54,7 +54,3 @@ hooks/                # useTheme, useImagePicker, useAlert
 services/             # exportService (JSON/CSV/texte)
 styles/               # Fichiers de styles par écran + theme.js centralisé
 ```
-
-**Navigation** : Bottom Tab Navigator avec flux conditionnel selon l'authentification (token null → SignIn/SignUp, token présent → listes, détails, paramètres).
-
-**Thème** : couleur primaire `#5886fe`, centralisé dans `styles/theme.js`, consommé via le hook `useTheme`.
